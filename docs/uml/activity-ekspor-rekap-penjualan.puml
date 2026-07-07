@@ -1,0 +1,20 @@
+@startuml Ekspor Rekap Penjualan Akuntansi (Excel)
+|Pemilik Toko (Merchant)|
+start
+:Buka menu "Laporan Keuangan";
+:Pilih rentang periode laporan;
+:Klik "Ekspor ke Excel (.xlsx)";
+|Sistem|
+:Query data transaksi lengkap: order items, harga beli (HPP), harga jual, laba kotor;
+|Database|
+:Kembalikan dataset penjualan detail;
+|Sistem|
+:Instansiasi Maatwebsite Excel;
+:Tulis header kolom spreadsheet (Invoice, Tanggal, Produk, HPP, Harga Jual, Laba, Ongkir, Status);
+:Looping data & isi cell;
+:Apply auto-width & format nominal mata uang;
+:Output file Excel (.xlsx);
+|Pemilik Toko (Merchant)|
+:File Excel didownload otomatis oleh browser;
+stop
+@endum

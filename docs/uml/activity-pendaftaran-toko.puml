@@ -1,0 +1,25 @@
+@startuml Pendaftaran dan Pengaturan Toko
+|Pengguna (Customer)|
+start
+:Buka menu "Buka Toko";
+:Isi form (Nama Toko, Deskripsi, Alamat, Kota Asal);
+:Unggah Logo & Banner Toko;
+:Klik "Daftarkan Toko";
+|Sistem|
+:Validasi input (Nama toko harus unik, logo file format);
+if (Valid?) then (Tidak)
+  :Tampilkan pesan error;
+  |Pengguna (Customer)|
+  backward:Isi form (Nama Toko, Deskripsi, Alamat, Kota Asal);
+else (Ya)
+  |Sistem|
+  :Generate slug unik dari nama toko (e.g. toko-kita);
+  :Simpan file gambar ke storage;
+  :Simpan record toko ke database dengan status "Pending Verification";
+  |Database|
+  :INSERT ke tabel `shops`;
+  |Sistem|
+  :Tampilkan pesan "Pendaftaran dikirim. Menunggu verifikasi admin.";
+  stop
+endif
+@endum

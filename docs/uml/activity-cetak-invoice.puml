@@ -1,0 +1,17 @@
+@startuml Cetak Invoice Pembelian
+|Pengguna|
+start
+:Buka detail pesanan (Pembeli atau Merchant);
+:Klik tombol "Cetak Invoice";
+|Sistem|
+:Ambil data pesanan, detail item, alamat, & toko dari database;
+|Database|
+:Kembalikan data relasional lengkap;
+|Sistem|
+:Load template view khusus invoice;
+:Render html ke format PDF menggunakan dompdf;
+:Stream file PDF ke browser pembeli/merchant;
+|Pengguna|
+:Lihat PDF / Simpan file / Cetak ke Printer fisik;
+stop
+@endum

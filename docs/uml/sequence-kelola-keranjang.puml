@@ -1,0 +1,51 @@
+@startuml Kelola Keranjang Belanja
+actor Pembeli as user
+participant "Product Detail View" as view
+participant "Cart View" as cart_view
+participant "Route (web.php)" as routes
+participant "CartController" as controller
+participant "Product Model" as product_model
+participant "Cart Model" as model
+database "MySQL Database" as db
+
+user -> view : Klik "Tambah ke Keranjang"
+view -> routes : POST /cart
+routes -> controller : store(request)
+activate controller
+
+controller -> product_model : find(product_id)
+activate product_model
+product_model -> db : SELECT stock FROM products WHERE id = ?
+db --> product_model : data stok
+product_model --> controller : product object
+deactivate product_model
+
+alt stok habis
+  controller --> view : back with error "Stok tidak cukup"
+  view --> user : Tampilkan error stok
+else stok tersedia
+  controller -> model : updateOrCreate(cart_item)
+  activate model
+  model -> db : INSERT/UPDATE INTO carts (user_id, product_id, qty)
+  db --> model : success
+  model --> controller : cart object
+  deactivate model
+  controller --> view : redirect('/cart')->with('success', 'Ditambahkan')
+  deactivate controller
+  view --> user : Arahkan ke halaman keranjang belanja
+end
+
+user -> cart_view : Ubah Qty / Hapus item
+cart_view -> routes : PATCH/DELETE /cart/{id}
+routes -> controller : update/destroy
+activate controller
+controller -> model : update/delete
+activate model
+model -> db : UPDATE/DELETE FROM carts WHERE id = ?
+db --> model : success
+model --> controller : success
+deactivate model
+controller --> cart_view : redirect('/cart')
+deactivate controller
+cart_view --> user : Tampilkan keranjang belanja terupdate
+@endum

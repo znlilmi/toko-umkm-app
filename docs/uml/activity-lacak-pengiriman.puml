@@ -1,0 +1,16 @@
+@startuml Lacak Status Pengiriman
+|Pembeli|
+start
+:Buka menu "Pesanan Saya";
+:Pilih pesanan dengan status "Dikirim";
+:Klik "Lacak Pengiriman";
+|Sistem|
+:Ambil nomor resi & kurir dari pesanan;
+|Database|
+:Kembalikan data resi;
+|Sistem|
+:Request status pengiriman ke database (simulasi tracker);
+:Ambil log perjalanan paket;
+:Tampilkan timeline pengiriman (e.g., "Paket dikirim", "Paket transit", "Sedang diantar");
+stop
+@endum

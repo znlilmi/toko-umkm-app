@@ -1,0 +1,31 @@
+@startuml Ekspor Laporan Ulasan
+actor Pemilik Toko as user
+participant "Review List View" as view
+participant "Route (web.php)" as routes
+participant "ExportController" as controller
+participant "Review Model" as model
+participant "Maatwebsite Excel" as excel
+database "MySQL Database" as db
+
+user -> view : Klik "Ekspor Excel Ulasan"
+view -> routes : GET /merchant/reports/reviews-excel
+routes -> controller : exportReviewsExcel()
+activate controller
+
+controller -> model : select reviews join products & items
+activate model
+model -> db : SELECT * FROM reviews JOIN order_items JOIN products WHERE products.shop_id=?
+db --> model : ulasan ulasan produk merchant
+model --> controller : review collection
+deactivate model
+
+controller -> excel : download(new ReviewExport(data), 'laporan-ulasan.xlsx')
+activate excel
+excel -> excel : generateSpreadsheetFile()
+excel --> controller : excel stream
+deactivate excel
+
+controller --> view : download response (laporan-ulasan.xlsx)
+deactivate controller
+view --> user : File Excel ulasan terunduh otomatis oleh browser
+@endum

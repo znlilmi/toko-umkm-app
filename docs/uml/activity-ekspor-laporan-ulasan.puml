@@ -1,0 +1,16 @@
+@startuml Ekspor Laporan Ulasan (Excel)
+|Pemilik Toko (Merchant)|
+start
+:Buka menu "Laporan Ulasan";
+:Klik "Ekspor Ulasan ke Excel";
+|Sistem|
+:Query tabel `reviews` join `products` & `order_items` milik toko;
+|Database|
+:Kembalikan list ulasan & rating;
+|Sistem|
+:Tulis data ke file Excel (Nama Produk, Rating, Komentar, Tanggal Ulasan);
+:Download Excel (.xlsx) ke browser merchant;
+|Pemilik Toko (Merchant)|
+:Simpan file ulasan untuk evaluasi produk;
+stop
+@endum

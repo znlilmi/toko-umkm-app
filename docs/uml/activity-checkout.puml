@@ -1,0 +1,39 @@
+@startuml Checkout Pesanan
+|Pembeli|
+start
+:Klik "Checkout" dari keranjang;
+|Sistem|
+:Cari produk di keranjang;
+:Grupkan item berdasarkan toko (Shop ID);
+:Hitung total berat produk per toko;
+|Pembeli|
+:Pilih alamat pengiriman;
+:Pilih kurir pengiriman per toko;
+|Sistem|
+:Kalkulasi ongkos kirim berdasarkan berat & jarak;
+:Tampilkan total biaya per toko & total keseluruhan;
+|Pembeli|
+:Klik "Buat Pesanan";
+|Sistem|
+start transaction;
+:Cek ketersediaan stok di database (SELECT FOR UPDATE);
+|Database|
+:Kembalikan stok terkini;
+|Sistem|
+if (Stok cukup untuk semua produk?) then (Tidak)
+  :Rollback transaction;
+  :Tampilkan pesan error "Stok habis/berubah";
+  stop
+else (Ya)
+  :Buat order header di tabel `orders` per toko;
+  :Buat order items di tabel `order_items`;
+  :Kurangi stok produk di tabel `products`;
+  :Catat log mutasi stok tipe OUT di `stock_mutations`;
+  :Bersihkan item terkait dari keranjang;
+  commit transaction;
+  :Hasilkan nomor invoice & instruksi pembayaran;
+  :Jalankan timer pembatalan otomatis (1 jam);
+  :Tampilkan halaman detail pesanan pending;
+  stop
+endif
+@endum

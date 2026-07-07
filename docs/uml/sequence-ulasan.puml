@@ -1,0 +1,41 @@
+@startuml Beri Ulasan dan Rating Produk
+actor Pembeli as user
+participant "Review Modal Form" as view
+participant "Route (web.php)" as routes
+participant "ReviewController" as controller
+participant "Review Model" as review_model
+participant "Product Model" as product_model
+database "MySQL Database" as db
+
+user -> view : Pilih bintang & isi komentar ulasan
+user -> view : Klik "Kirim Ulasan"
+view -> routes : POST /reviews
+routes -> controller : store(request)
+activate controller
+
+controller -> controller : validate(request)
+alt input tidak valid
+  controller --> view : redirect back with errors
+  view --> user : Tampilkan pesan error
+else input valid
+  controller -> review_model : create(review_data)
+  activate review_model
+  review_model -> db : INSERT INTO reviews (order_item_id, rating, comment)
+  db --> review_model : success
+  review_model --> controller : review object
+  deactivate review_model
+  
+  controller -> product_model : recalculateAverageRating(product_id)
+  activate product_model
+  product_model -> db : SELECT AVG(rating) FROM reviews WHERE product_id = ?
+  db --> product_model : avg_rating
+  product_model -> db : UPDATE products SET rating = ? WHERE id = ?
+  db --> product_model : success
+  product_model --> controller : success
+  deactivate product_model
+  
+  controller --> view : redirect('/orders')->with('success', 'Ulasan dikirim')
+  deactivate controller
+  view --> user : Tampilkan notifikasi "Ulasan Berhasil Disimpan"
+end
+@endum

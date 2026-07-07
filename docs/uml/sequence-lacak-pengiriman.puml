@@ -1,0 +1,22 @@
+@startuml Lacak Status Pengiriman
+actor Pembeli as user
+participant "Order Detail View" as view
+participant "Route (web.php)" as routes
+participant "OrderController" as controller
+database "MySQL Database" as db
+
+user -> view : Klik "Lacak Pengiriman"
+view -> routes : GET /orders/{id}/track
+routes -> controller : track(id)
+activate controller
+
+controller -> db : SELECT courier, tracking_number FROM orders WHERE id = ?
+activate db
+db --> controller : data resi & kurir
+deactivate db
+
+controller -> controller : callSimulatedTrackingAPI(courier, resi)
+controller --> view : view('orders.track', tracking_history)
+deactivate controller
+view --> user : Tampilkan riwayat transit pengantar paket (Simulasi Resi)
+@endum

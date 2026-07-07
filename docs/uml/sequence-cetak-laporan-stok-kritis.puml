@@ -1,0 +1,31 @@
+@startuml Cetak Laporan Stok Kritis
+actor Pemilik Toko as user
+participant "Inventory View" as view
+participant "Route (web.php)" as routes
+participant "MerchantReportController" as controller
+participant "Product Model" as model
+participant "Barryvdh DomPDF" as dompdf
+database "MySQL Database" as db
+
+user -> view : Klik "Cetak Stok Kritis (PDF)"
+view -> routes : GET /merchant/reports/low-stock-pdf
+routes -> controller : lowStockPdf()
+activate controller
+
+controller -> model : where('stock', '<=', 5)->get()
+activate model
+model -> db : SELECT * FROM products WHERE shop_id=? AND stock <= 5
+db --> model : data produk stok menipis
+model --> controller : product collection
+deactivate model
+
+controller -> dompdf : loadView('pdf.low_stock', products)
+activate dompdf
+dompdf -> dompdf : renderPDF()
+dompdf --> controller : PDF stream
+deactivate dompdf
+
+controller --> view : download response (stok-kritis.pdf)
+deactivate controller
+view --> user : Unduhan file PDF stok kritis dimulai di browser
+@endum

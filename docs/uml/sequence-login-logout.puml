@@ -1,0 +1,48 @@
+@startuml Login dan Logout
+actor Pengguna as user
+participant "Blade View / Login Form" as view
+participant "Route (web.php)" as routes
+participant "LoginController" as controller
+participant "User Model" as model
+database "MySQL Database" as db
+
+user -> view : Masukkan Email & Password
+user -> view : Klik "Login"
+view -> routes : POST /login
+routes -> controller : store(request)
+activate controller
+
+controller -> controller : validate(request)
+alt input tidak valid
+  controller --> view : redirect back with validation errors
+  view --> user : Tampilkan error input
+else input valid
+  controller -> model : where('email', email)->first()
+  activate model
+  model -> db : SELECT * FROM users WHERE email = ?
+  activate db
+  db --> model : user record
+  deactivate db
+  model --> controller : user object
+  deactivate model
+  
+  alt email tidak ketemu OR password tidak cocok
+    controller --> view : redirect back with "Kredensial salah"
+    view --> user : Tampilkan error login
+  else email & password valid
+    controller -> controller : Session::regenerate()
+    controller --> view : redirect('/dashboard')
+    view --> user : Tampilkan Dashboard sesuai role
+  end
+end
+
+user -> view : Klik "Logout"
+view -> routes : POST /logout
+routes -> controller : destroy(request)
+controller -> controller : Auth::logout()
+controller -> controller : Session::invalidate()
+controller -> controller : Session::regenerateToken()
+controller --> view : redirect('/login')
+deactivate controller
+view --> user : Arahkan ke Halaman Login
+@endum

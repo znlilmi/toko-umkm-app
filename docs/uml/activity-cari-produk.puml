@@ -1,0 +1,21 @@
+@startuml Cari dan Jelajahi Produk
+|Pembeli|
+start
+:Buka halaman utama / katalog TokoKita;
+|Sistem|
+:Tampilkan produk populer & kategori utama;
+|Pembeli|
+:Ketik kata kunci pencarian / pilih kategori / filter harga;
+|Sistem|
+:Eksekusi query SELECT dengan filter;
+|Database|
+:Kembalikan daftar produk matching;
+|Sistem|
+:Tampilkan hasil produk terpaginasi;
+if (Pilih produk?) then (Ya)
+  :Buka halaman detail produk;
+  :Tampilkan deskripsi, stok, harga, & ulasan;
+else (Tidak)
+endif
+stop
+@endum

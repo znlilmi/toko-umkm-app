@@ -1,0 +1,46 @@
+@startuml Kelola Profil dan Alamat
+actor Pengguna as user
+participant "Blade View / Profile Edit" as view
+participant "Route (web.php)" as routes
+participant "ProfileController" as controller
+participant "User Model" as model
+database "MySQL Database" as db
+
+user -> view : Buka halaman profil
+view -> routes : GET /profile
+routes -> controller : edit()
+activate controller
+controller -> model : find(auth_id)
+activate model
+model -> db : SELECT * FROM users WHERE id = ?
+db --> model : data user
+model --> controller : user object
+deactivate model
+controller --> view : view('profile.edit', user)
+deactivate controller
+view --> user : Tampilkan form profil
+
+user -> view : Ubah data profil & klik "Simpan"
+view -> routes : PATCH /profile
+routes -> controller : update(request)
+activate controller
+controller -> controller : validate(request)
+
+alt input tidak valid
+  controller --> view : redirect back with errors
+  view --> user : Tampilkan pesan error
+else input valid
+  alt ada upload foto profil baru
+    controller -> controller : upload ke storage
+  end
+  controller -> model : update(data)
+  activate model
+  model -> db : UPDATE users SET name=?, phone=?, address=? WHERE id=?
+  db --> model : success
+  model --> controller : updated user
+  deactivate model
+  controller --> view : redirect('/profile')->with('status', 'Profile Updated')
+  deactivate controller
+  view --> user : Tampilkan notifikasi sukses
+end
+@endum

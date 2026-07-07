@@ -1,0 +1,20 @@
+@startuml Lihat Dashboard Finansial dan Grafik
+|Pemilik Toko (Merchant)|
+start
+:Buka halaman Dashboard Seller;
+|Sistem|
+:Ambil summary data penjualan toko: sum(grand_total), count(orders) filter status='completed';
+:Ambil data tren transaksi bulanan (current year);
+:Ambil distribusi penjualan per kategori produk;
+|Database|
+:Eksekusi query agregasi & kembalikan hasil;
+|Sistem|
+:Inisialisasi Chart.js;
+:Render KPI Cards (Omzet, Transaksi, Saldo);
+:Render Line Chart untuk Tren Penjualan Harian/Bulanan;
+:Render Donut Chart untuk Kategori Terlaris;
+:Tampilkan notifikasi jika ada produk low-stock;
+|Pemilik Toko (Merchant)|
+:Pantau visualisasi grafik & data penjualan;
+stop
+@endum

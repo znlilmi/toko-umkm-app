@@ -1,0 +1,44 @@
+@startuml Konfirmasi Terima Barang
+actor Pembeli as user
+participant "Order Detail View" as view
+participant "Route (web.php)" as routes
+participant "OrderController" as controller
+participant "DB Transaction" as db_tx
+participant "Order Model" as order_model
+participant "Payment Model" as payment_model
+participant "Shop Model" as shop_model
+database "MySQL Database" as db
+
+user -> view : Klik "Konfirmasi Barang Diterima"
+view -> routes : POST /orders/{id}/complete
+routes -> controller : complete(id)
+activate controller
+
+controller -> db_tx : DB::beginTransaction()
+activate db_tx
+
+controller -> order_model : find(id)->update(status='completed')
+activate order_model
+order_model -> db : UPDATE orders SET status = 'completed' WHERE id = ?
+db --> order_model : success
+deactivate order_model
+
+controller -> payment_model : where('order_id', id)->update(payment_status='paid')
+activate payment_model
+payment_model -> db : UPDATE payments SET payment_status = 'paid' WHERE order_id = ?
+db --> payment_model : success
+deactivate payment_model
+
+controller -> shop_model : increment('balance', order_total)
+activate shop_model
+shop_model -> db : UPDATE shops SET balance = balance + ? WHERE id = ?
+db --> shop_model : success
+deactivate shop_model
+
+controller -> db_tx : DB::commit()
+deactivate db_tx
+
+controller --> view : redirect('/orders/{id}')->with('success', 'Transaksi Selesai')
+deactivate controller
+view --> user : Tampilkan status Selesai & tampilkan modal Ulasan
+@endum

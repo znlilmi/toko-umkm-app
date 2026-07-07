@@ -1,0 +1,26 @@
+@startuml Beri Ulasan dan Rating Produk
+|Pembeli|
+start
+:Sistem menampilkan modal ulasan (setelah pesanan selesai);
+|Pembeli|
+:Pilih rating bintang (1-5);
+:Tulis ulasan/komentar produk;
+:Klik "Kirim Ulasan";
+|Sistem|
+:Validasi rating (wajib) & komentar;
+if (Valid?) then (Tidak)
+  :Tampilkan pesan error;
+  |Pembeli|
+  backward:Pilih rating bintang (1-5);
+else (Ya)
+  |Sistem|
+  :Simpan ulasan ke database terikat pada `order_item_id`;
+  |Database|
+  :INSERT record ke tabel `reviews`;
+  :Hitung rata-rata rating baru untuk produk tersebut;
+  :Update kolom `rating` produk;
+  |Sistem|
+  :Tampilkan pesan "Terima kasih atas ulasan Anda";
+  stop
+endif
+@endum

@@ -1,0 +1,38 @@
+@startuml Kelola Katalog Produk
+actor Pemilik Toko as user
+participant "Merchant Product View" as view
+participant "Route (web.php)" as routes
+participant "ProductController" as controller
+participant "Product Model" as model
+participant "StockMutation Model" as mutation
+database "MySQL Database" as db
+
+user -> view : Isi form produk baru & klik "Simpan"
+view -> routes : POST /merchant/products
+routes -> controller : store(request)
+activate controller
+
+controller -> controller : validate(request)
+alt input tidak valid
+  controller --> view : back with errors
+  view --> user : Tampilkan error input
+else input valid
+  controller -> controller : upload gambar ke storage
+  controller -> model : create(product_data)
+  activate model
+  model -> db : INSERT INTO products (shop_id, name, price, stock, weight)
+  db --> model : product ID
+  model --> controller : product object
+  deactivate model
+  
+  controller -> mutation : create(stok_awal_mutasi)
+  activate mutation
+  mutation -> db : INSERT INTO stock_mutations (product_id, qty, type='IN', desc='Stok Awal')
+  db --> mutation : success
+  deactivate mutation
+  
+  controller --> view : redirect('/merchant/products')->with('success', 'Produk Ditambahkan')
+  deactivate controller
+  view --> user : Tampilkan katalog produk terupdate dengan notifikasi sukses
+end
+@endum

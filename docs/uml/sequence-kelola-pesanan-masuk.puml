@@ -1,0 +1,68 @@
+@startuml Kelola Status Pesanan Masuk
+actor Pemilik Toko as user
+participant "Merchant Order View" as view
+participant "Route (web.php)" as routes
+participant "MerchantOrderController" as controller
+participant "Order Model" as order_model
+participant "DB Transaction" as db_tx
+participant "Product Model" as product_model
+participant "StockMutation Model" as mutation_model
+database "MySQL Database" as db
+
+user -> view : Verifikasi bukti bayar & klik "Terima Pesanan"
+view -> routes : PATCH /merchant/orders/{id}/accept
+routes -> controller : accept(id)
+activate controller
+controller -> order_model : find(id)->update(status='processing')
+activate order_model
+order_model -> db : UPDATE orders SET status = 'processing' WHERE id = ?
+db --> order_model : success
+deactivate order_model
+controller --> view : redirect('/merchant/orders')->with('success', 'Diproses')
+deactivate controller
+view --> user : Status pesanan berganti ke "Diproses"
+
+user -> view : Isi Nomor Resi & klik "Kirim Barang"
+view -> routes : PATCH /merchant/orders/{id}/ship
+routes -> controller : ship(request, id)
+activate controller
+controller -> order_model : find(id)->update(status='shipped', tracking_number=resi)
+activate order_model
+order_model -> db : UPDATE orders SET status='shipped', tracking_number=? WHERE id=?
+db --> order_model : success
+deactivate order_model
+controller --> view : redirect('/merchant/orders')
+deactivate controller
+view --> user : Status pesanan berganti ke "Dikirim"
+
+user -> view : Klik "Tolak Pesanan" (Pembayaran palsu/Stok cacat)
+view -> routes : PATCH /merchant/orders/{id}/cancel
+routes -> controller : cancel(id)
+activate controller
+controller -> db_tx : DB::beginTransaction()
+activate db_tx
+
+controller -> order_model : find(id)->update(status='cancelled')
+activate order_model
+order_model -> db : UPDATE orders SET status = 'cancelled' WHERE id = ?
+db --> order_model : success
+deactivate order_model
+
+controller -> product_model : increment(stok_kembali)
+activate product_model
+product_model -> db : UPDATE products SET stock = stock + ? WHERE id = ?
+db --> product_model : success
+deactivate product_model
+
+controller -> mutation_model : create(mutation_log)
+activate mutation_model
+mutation_model -> db : INSERT INTO stock_mutations (product_id, qty, type='IN', desc)
+db --> mutation_model : success
+deactivate mutation_model
+
+controller -> db_tx : DB::commit()
+deactivate db_tx
+controller --> view : redirect('/merchant/orders')->with('info', 'Pesanan Dibatalkan')
+deactivate controller
+view --> user : Tampilkan pesanan dibatalkan & stok dikembalikan
+@endum

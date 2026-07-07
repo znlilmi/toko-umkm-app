@@ -1,0 +1,289 @@
+@startuml TokoKita Class Diagram
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam class {
+    BackgroundColor #FDFEFE
+    BorderColor #1A5276
+    ArrowColor #2E4053
+}
+
+package "Laravel Models (Eloquent ORM)" {
+    class User {
+        + int id
+        + string name
+        + string email
+        + string password
+        + string phone
+        + string role
+        + string profile_photo
+        + addresses() : HasMany
+        + shop() : HasOne
+        + orders() : HasMany
+    }
+    
+    class Address {
+        + int id
+        + int user_id
+        + string recipient_name
+        + string phone
+        + string address_line
+        + int city_id
+        + user() : BelongsTo
+    }
+    
+    class Shop {
+        + int id
+        + int user_id
+        + string name
+        + string slug
+        + string description
+        + string logo
+        + string banner
+        + decimal balance
+        + string address
+        + int city_id
+        + bool is_active
+        + user() : BelongsTo
+        + products() : HasMany
+        + orders() : HasMany
+    }
+    
+    class Category {
+        + int id
+        + string name
+        + string slug
+        + int parent_id
+        + parent() : BelongsTo
+        + children() : HasMany
+        + products() : HasMany
+    }
+    
+    class Product {
+        + int id
+        + int shop_id
+        + int category_id
+        + string name
+        + string slug
+        + string description
+        + decimal price
+        + int stock
+        + int weight
+        + bool is_active
+        + decimal rating
+        + shop() : BelongsTo
+        + category() : BelongsTo
+        + orderItems() : HasMany
+        + mutations() : HasMany
+        + reviews() : HasManyThrough
+    }
+    
+    class Order {
+        + int id
+        + string invoice_number
+        + int customer_id
+        + int shop_id
+        + decimal total_amount
+        + decimal shipping_cost
+        + decimal grand_total
+        + string status
+        + string shipping_address
+        + string courier
+        + string tracking_number
+        + customer() : BelongsTo
+        + shop() : BelongsTo
+        + items() : HasMany
+        + payment() : HasOne
+    }
+    
+    class OrderItem {
+        + int id
+        + int order_id
+        + int product_id
+        + int qty
+        + decimal price
+        + decimal subtotal
+        + order() : BelongsTo
+        + product() : BelongsTo
+        + review() : HasOne
+    }
+    
+    class Payment {
+        + int id
+        + int order_id
+        + string payment_method
+        + string payment_status
+        + decimal amount_paid
+        + string proof_of_payment
+        + datetime paid_at
+        + order() : BelongsTo
+    }
+    
+    class Review {
+        + int id
+        + int order_item_id
+        + int rating
+        + string comment
+        + orderItem() : BelongsTo
+    }
+    
+    class StockMutation {
+        + int id
+        + int product_id
+        + int qty
+        + string type
+        + string description
+        + product() : BelongsTo
+    }
+}
+
+package "Laravel Controllers" {
+    class RegisterController {
+        + register(Request request) : RedirectResponse
+    }
+    
+    class LoginController {
+        + store(Request request) : RedirectResponse
+        + destroy(Request request) : RedirectResponse
+    }
+    
+    class ProfileController {
+        + edit() : View
+        + update(Request request) : RedirectResponse
+    }
+    
+    class ProductController {
+        + index(Request request) : View
+        + show(string slug) : View
+    }
+    
+    class CartController {
+        + store(Request request) : RedirectResponse
+        + update(Request request, int id) : RedirectResponse
+        + destroy(int id) : RedirectResponse
+    }
+    
+    class CheckoutController {
+        + store(Request request) : RedirectResponse
+    }
+    
+    class PaymentController {
+        + store(Request request, int order_id) : RedirectResponse
+    }
+    
+    class OrderController {
+        + track(int order_id) : View
+        + complete(int order_id) : RedirectResponse
+    }
+    
+    class ReviewController {
+        + store(Request request) : RedirectResponse
+    }
+    
+    class ShopController {
+        + store(Request request) : RedirectResponse
+    }
+    
+    class InventoryController {
+        + adjust(Request request) : RedirectResponse
+    }
+    
+    class MerchantOrderController {
+        + accept(int order_id) : RedirectResponse
+        + ship(Request request, int order_id) : RedirectResponse
+        + cancel(int order_id) : RedirectResponse
+    }
+    
+    class MerchantDashboardController {
+        + index() : View
+    }
+    
+    class MerchantReportController {
+        + salesPdf(Request request) : Response
+        + lowStockPdf() : Response
+    }
+    
+    class ExportController {
+        + exportSalesExcel() : BinaryFileResponse
+        + exportMutationsExcel(Request request) : BinaryFileResponse
+        + exportReviewsExcel() : BinaryFileResponse
+    }
+    
+    class AdminShopController {
+        + verify(int shop_id) : RedirectResponse
+    }
+    
+    class AdminCategoryController {
+        + destroy(int category_id) : RedirectResponse
+    }
+    
+    class AdminDashboardController {
+        + index() : View
+    }
+    
+    class AdminReportController {
+        + commissionPdf() : Response
+    }
+}
+
+package "Laravel Services" {
+    class OrderService {
+        + createOrder(User customer, array cartItems, Address address, string courier) : array
+    }
+}
+
+' Relations Model to Model
+User "1" *-- "0..*" Address
+User "1" -- "0..1" Shop : "owns"
+User "1" -- "0..*" Order : "places"
+Shop "1" -- "0..*" Product : "contains"
+Shop "1" -- "0..*" Order : "receives"
+Category "1" -- "0..*" Product : "labels"
+Category "1" -- "0..*" Category : "sub-categories"
+Product "1" -- "0..*" OrderItem : "ordered in"
+Product "1" -- "0..*" StockMutation : "has logs"
+Order "1" *-- "1..*" OrderItem : "comprises"
+Order "1" -- "0..1" Payment : "settled by"
+OrderItem "1" -- "0..1" Review : "reviewed in"
+
+' Relations Controllers to Models (Dependencies)
+RegisterController ..> User
+LoginController ..> User
+ProfileController ..> User
+ProfileController ..> Address
+ProductController ..> Product
+CartController ..> Product
+CheckoutController ..> OrderService
+OrderService ..> Order
+OrderService ..> OrderItem
+OrderService ..> Product
+OrderService ..> StockMutation
+PaymentController ..> Payment
+PaymentController ..> Order
+OrderController ..> Order
+OrderController ..> Payment
+OrderController ..> Shop
+ReviewController ..> Review
+ReviewController ..> Product
+ShopController ..> Shop
+ShopController ..> User
+InventoryController ..> Product
+InventoryController ..> StockMutation
+MerchantOrderController ..> Order
+MerchantOrderController ..> Product
+MerchantOrderController ..> StockMutation
+MerchantDashboardController ..> Order
+MerchantDashboardController ..> Product
+MerchantReportController ..> Order
+MerchantReportController ..> Product
+ExportController ..> Order
+ExportController ..> StockMutation
+ExportController ..> Review
+AdminShopController ..> Shop
+AdminCategoryController ..> Category
+AdminCategoryController ..> Product
+AdminDashboardController ..> User
+AdminDashboardController ..> Shop
+AdminDashboardController ..> Order
+AdminReportController ..> Order
+
+@endum

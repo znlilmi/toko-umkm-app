@@ -1,0 +1,31 @@
+@startuml Cetak Invoice Pembelian
+actor Pengguna as user
+participant "Order Detail View" as view
+participant "Route (web.php)" as routes
+participant "InvoiceController" as controller
+participant "Order Model" as model
+participant "Barryvdh DomPDF" as dompdf
+database "MySQL Database" as db
+
+user -> view : Klik "Cetak Invoice (PDF)"
+view -> routes : GET /orders/{id}/invoice
+routes -> controller : download(id)
+activate controller
+
+controller -> model : with('shop', 'items.product', 'customer')->find(id)
+activate model
+model -> db : SELECT * FROM orders JOIN shops... WHERE id = ?
+db --> model : data order relasional lengkap
+model --> controller : order object
+deactivate model
+
+controller -> dompdf : loadView('pdf.invoice', order)
+activate dompdf
+dompdf -> dompdf : renderHTMLtoPDF()
+dompdf --> controller : raw PDF stream data
+deactivate dompdf
+
+controller --> view : download response (invoice.pdf)
+deactivate controller
+view --> user : Stream PDF file / Muncul pop-up unduhan browser
+@endum

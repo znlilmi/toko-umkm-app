@@ -1,0 +1,39 @@
+@startuml Kelola Status Pesanan Masuk
+|Pemilik Toko (Merchant)|
+start
+:Buka menu "Pesanan Masuk";
+|Sistem|
+:Tampilkan pesanan toko terfilter status;
+|Pemilik Toko (Merchant)|
+:Pilih Pesanan status "Menunggu Konfirmasi";
+:Lihat Bukti Transfer Pembayaran;
+if (Bukti Valid?) then (Ya)
+  :Klik "Terima Pesanan";
+  |Sistem|
+  :Update status pesanan ke "Diproses" (Processing);
+  |Database|
+  :Simpan status pesanan;
+  |Pemilik Toko (Merchant)|
+  :Kemas produk pesanan;
+  :Kirim ke kurir & dapatkan No. Resi;
+  :Masukkan No. Resi di form pesanan;
+  :Klik "Kirim Barang";
+  |Sistem|
+  :Update status pesanan ke "Dikirim" (Shipped);
+  :Simpan nomor resi di order record;
+  |Database|
+  :Simpan status & resi;
+else (Tidak / Palsu)
+  |Pemilik Toko (Merchant)|
+  :Klik "Tolak Pesanan" & isi alasan;
+  |Sistem|
+  start transaction;
+  :Update status pesanan ke "Dibatalkan" (Cancelled);
+  :Kembalikan stok produk (Restock);
+  :INSERT record mutasi stok tipe IN di `stock_mutations`;
+  |Database|
+  :Simpan perubahan order & mutasi;
+  commit transaction;
+endif
+stop
+@endum

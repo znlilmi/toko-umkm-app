@@ -1,0 +1,18 @@
+@startuml Cetak Laporan Komisi dan Performa (PDF)
+|Admin Platform|
+start
+:Buka menu "Laporan Komisi Platform";
+:Pilih rentang bulan laporan;
+:Klik "Ekspor Laporan Komisi (PDF)";
+|Sistem|
+:Query semua transaksi sukses dengan potongan biaya komisi platform;
+|Database|
+:Kembalikan dataset komisi per toko;
+|Sistem|
+:Hitung total GMV seluruh platform & total komisi bersih platform;
+:Generate layout PDF tabel komisi ber-kop resmi TokoKita;
+:Download PDF ke browser Admin;
+|Admin Platform|
+:Gunakan laporan untuk evaluasi keuntungan platform;
+stop
+@endum

@@ -1,0 +1,34 @@
+@startuml Registrasi Akun
+actor Pengguna as user
+participant "Blade View / Register Form" as view
+participant "Route (web.php)" as routes
+participant "RegisterController" as controller
+participant "User Model" as model
+database "MySQL Database" as db
+
+user -> view : Isi Form Registrasi (Nama, Email, Password, No HP)
+user -> view : Klik "Daftar"
+view -> routes : POST /register
+routes -> controller : register(request)
+activate controller
+
+controller -> controller : validate(request)
+alt input tidak valid
+  controller --> view : redirect back with errors
+  view --> user : Tampilkan pesan error validasi
+else input valid
+  controller -> controller : Hash Password (bcrypt)
+  controller -> model : create(data)
+  activate model
+  model -> db : INSERT INTO users (role='customer')
+  activate db
+  db --> model : success
+  deactivate db
+  model --> controller : user object
+  deactivate model
+  controller -> controller : Auth::login(user)
+  controller --> view : redirect('/dashboard')
+  deactivate controller
+  view --> user : Tampilkan Dashboard Home
+end
+@endum

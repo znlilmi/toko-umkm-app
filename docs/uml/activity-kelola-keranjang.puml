@@ -1,0 +1,37 @@
+@startuml Kelola Keranjang Belanja
+|Pembeli|
+start
+:Buka detail produk;
+:Klik "Tambah ke Keranjang";
+|Sistem|
+:Cek ketersediaan stok produk;
+|Database|
+:Kembalikan jumlah stok;
+|Sistem|
+if (Stok mencukupi?) then (Tidak)
+  :Tampilkan pesan "Stok tidak mencukupi";
+else (Ya)
+  if (Produk sudah ada di keranjang?) then (Ya)
+    :Update quantity (qty + 1);
+  else (Tidak)
+    :Tambahkan item baru ke keranjang;
+  endif
+  :Simpan keranjang di database/session;
+endif
+|Pembeli|
+:Buka halaman "Keranjang Belanja";
+|Sistem|
+:Tampilkan daftar item, qty, subtotal, grouped by Shop;
+|Pembeli|
+split
+  :Ubah quantity item;
+  |Sistem|
+  :Hitung ulang subtotal;
+split or
+  :Hapus item dari keranjang;
+  |Sistem|
+  :Hapus item dari daftar;
+end split
+:Simpan perubahan keranjang;
+stop
+@endum

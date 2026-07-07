@@ -1,0 +1,31 @@
+@startuml Cetak Laporan Penjualan Berkala
+actor Pemilik Toko as user
+participant "Sales Report View" as view
+participant "Route (web.php)" as routes
+participant "MerchantReportController" as controller
+participant "Order Model" as model
+participant "Barryvdh DomPDF" as dompdf
+database "MySQL Database" as db
+
+user -> view : Pilih rentang tanggal & klik "Ekspor PDF"
+view -> routes : GET /merchant/reports/sales-pdf?start=xxx&end=yyy
+routes -> controller : salesPdf(request)
+activate controller
+
+controller -> model : filter rentang tanggal & status='completed'
+activate model
+model -> db : SELECT * FROM orders WHERE shop_id=? AND created_at BETWEEN ? AND ?
+db --> model : dataset order bulanan
+model --> controller : order collection
+deactivate model
+
+controller -> dompdf : loadView('pdf.sales_report', data)
+activate dompdf
+dompdf -> dompdf : renderPDF()
+dompdf --> controller : raw PDF stream
+deactivate dompdf
+
+controller --> view : download response (laporan-penjualan.pdf)
+deactivate controller
+view --> user : Download otomatis file PDF laporan penjualan berkala
+@endum

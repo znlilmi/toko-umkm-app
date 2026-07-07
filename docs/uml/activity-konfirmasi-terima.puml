@@ -1,0 +1,20 @@
+@startuml Konfirmasi Terima Barang
+|Pembeli|
+start
+:Buka menu "Pesanan Saya";
+:Pilih pesanan status "Dikirim" yang telah sampai;
+:Klik "Konfirmasi Barang Diterima";
+:Klik "Ya, Konfirmasi";
+|Sistem|
+start transaction;
+:Update status pesanan menjadi "Selesai" (Completed);
+:Update status pembayaran menjadi "Selesai" (Paid);
+:Teruskan dana pesanan ke saldo merchant (Shop Balance);
+|Database|
+:Simpan perubahan order, payment, & saldo toko;
+commit transaction;
+|Sistem|
+:Tampilkan pesan sukses "Pesanan Selesai";
+:Tampilkan modal untuk isi ulasan (Review);
+stop
+@endum

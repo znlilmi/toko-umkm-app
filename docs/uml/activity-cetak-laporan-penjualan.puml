@@ -1,0 +1,21 @@
+@startuml Cetak Laporan Penjualan Berkala (PDF)
+|Pemilik Toko (Merchant)|
+start
+:Buka menu "Laporan Penjualan";
+:Pilih Rentang Tanggal (Mulai - Selesai);
+:Pilih Format ekspor "PDF";
+:Klik "Ekspor Laporan";
+|Sistem|
+:Validasi rentang tanggal;
+:Query database ambil semua order sukses dalam periode tersebut;
+|Database|
+:Kembalikan dataset order;
+|Sistem|
+:Hitung akumulasi Total Penjualan & Total Ongkir;
+:Generate file PDF menggunakan Dompdf dengan layout tabel legal;
+:Kirim file PDF dengan header Content-Disposition stream;
+|Pemilik Toko (Merchant)|
+:Sistem mendownload file PDF otomatis;
+:Buka/Cetak file PDF;
+stop
+@endum

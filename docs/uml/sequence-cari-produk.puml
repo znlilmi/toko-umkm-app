@@ -1,0 +1,40 @@
+@startuml Cari dan Jelajahi Produk
+actor Pembeli as user
+participant "Blade View / Catalog" as view
+participant "Route (web.php)" as routes
+participant "ProductController" as controller
+participant "Product Model" as model
+database "MySQL Database" as db
+
+user -> view : Masukkan kata kunci pencarian / pilih filter
+view -> routes : GET /products?search=keyword&category=cat
+routes -> controller : index(request)
+activate controller
+
+controller -> model : build query & paginate()
+activate model
+model -> db : SELECT * FROM products WHERE name LIKE ? AND category_id = ? LIMIT 12
+activate db
+db --> model : data produk terpaginasi
+deactivate db
+model --> controller : product collection
+deactivate model
+
+controller --> view : view('products.index', products)
+deactivate controller
+view --> user : Tampilkan daftar produk matching
+
+user -> view : Klik pada salah satu produk
+view -> routes : GET /products/{slug}
+routes -> controller : show(slug)
+activate controller
+controller -> model : where('slug', slug)->with('shop', 'reviews')->firstOrFail()
+activate model
+model -> db : SELECT * FROM products JOIN shops... WHERE slug = ?
+db --> model : detail produk, toko & ulasan
+model --> controller : product object with relations
+deactivate model
+controller --> view : view('products.show', product)
+deactivate controller
+view --> user : Tampilkan detail produk
+@endum

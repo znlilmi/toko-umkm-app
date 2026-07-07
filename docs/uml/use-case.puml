@@ -1,0 +1,102 @@
+@startuml TokoKita Use Case Diagram
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+
+' Theme styling
+skinparam rectangle {
+    BackgroundColor #F9F9F9
+    BorderColor #5D6D7E
+}
+skinparam usecase {
+    BackgroundColor #EBF5FB
+    BorderColor #2980B9
+    ArrowColor #2C3E50
+}
+
+actor "Pembeli Umum\n(Customer)" as customer
+actor "Pemilik Toko\n(Merchant)" as merchant
+actor "Administrator Sistem\n(Admin)" as admin
+
+rectangle "Sistem E-Commerce TokoKita" {
+    
+    ' --- MODUL AUTENTIKASI & PENGGUNA ---
+    usecase "Registrasi Akun" as UC_Register
+    usecase "Login & Logout" as UC_Login
+    usecase "Kelola Profil & Alamat" as UC_ManageProfile
+    
+    ' --- MODUL PEMBELI (CUSTOMER) ---
+    usecase "Cari & Jelajahi Produk" as UC_SearchProduct
+    usecase "Kelola Keranjang Belanja" as UC_ManageCart
+    usecase "Checkout Pesanan\n(Split Order & Ongkir)" as UC_Checkout
+    usecase "Unggah Bukti Pembayaran\n(Simulasi Transfer)" as UC_Payment
+    usecase "Lacak Status Pengiriman" as UC_TrackOrder
+    usecase "Konfirmasi Terima Barang\n(Pesanan Selesai)" as UC_ConfirmDelivery
+    usecase "Beri Ulasan & Rating Produk" as UC_Review
+    usecase "Cetak Invoice Pembelian (PDF)" as UC_PrintInvoice
+    
+    ' --- MODUL TOKO & INVENTARIS (MERCHANT) ---
+    usecase "Pendaftaran & Pengaturan Toko" as UC_ManageShop
+    usecase "Kelola Katalog Produk\n(CRUD Produk)" as UC_ManageProduct
+    usecase "Kelola Stok & Log Mutasi\n(Stock Ledger)" as UC_ManageStock
+    usecase "Kelola Status Pesanan Masuk\n(Proses/Kirim Resi/Batal)" as UC_ProcessOrder
+    
+    ' --- MODUL ANALISIS & PELAPORAN MERCHANT ---
+    usecase "Lihat Dashboard Finansial & Grafik" as UC_MerchantDashboard
+    usecase "Cetak Laporan Penjualan Berkala (PDF)" as UC_PrintPDFSales
+    usecase "Cetak Laporan Stok Kritis (PDF)" as UC_PrintPDFStock
+    usecase "Ekspor Rekap Penjualan Akuntansi (Excel)" as UC_ExportExcelSales
+    usecase "Ekspor Kartu Mutasi Stok (Excel)" as UC_ExportExcelStock
+    usecase "Ekspor Laporan Ulasan (Excel)" as UC_ExportExcelReview
+    
+    ' --- MODUL ADMINISTRATOR ---
+    usecase "Moderasi & Verifikasi Toko" as UC_VerifyShop
+    usecase "Kelola Kategori Global" as UC_GlobalCategory
+    usecase "Lihat Dashboard Performa Platform" as UC_AdminDashboard
+    usecase "Cetak Laporan Komisi & Performa (PDF)" as UC_PrintAdminReport
+
+}
+
+' --- HUBUNGAN PEMBELI (CUSTOMER) ---
+customer --> UC_Register
+customer --> UC_Login
+customer --> UC_ManageProfile
+customer --> UC_SearchProduct
+customer --> UC_ManageCart
+customer --> UC_Checkout
+customer --> UC_Payment
+customer --> UC_TrackOrder
+customer --> UC_ConfirmDelivery
+customer --> UC_Review
+customer --> UC_PrintInvoice
+
+' --- HUBUNGAN PEMILIK TOKO (MERCHANT) ---
+merchant --> UC_Login
+merchant --> UC_ManageProfile
+merchant --> UC_ManageShop
+merchant --> UC_ManageProduct
+merchant --> UC_ManageStock
+merchant --> UC_ProcessOrder
+merchant --> UC_MerchantDashboard
+merchant --> UC_PrintPDFSales
+merchant --> UC_PrintPDFStock
+merchant --> UC_ExportExcelSales
+merchant --> UC_ExportExcelStock
+merchant --> UC_ExportExcelReview
+merchant --> UC_PrintInvoice
+
+' --- HUBUNGAN ADMIN ---
+admin --> UC_Login
+admin --> UC_ManageProfile
+admin --> UC_VerifyShop
+admin --> UC_GlobalCategory
+admin --> UC_AdminDashboard
+admin --> UC_PrintAdminReport
+
+' --- RELASI ANTAR USE CASE (INCLUDES / EXTENDS) ---
+UC_Checkout ..> UC_ManageCart : <<include>>
+UC_ConfirmDelivery <.. UC_Review : <<extend>>
+UC_ProcessOrder ..> UC_ManageStock : <<include>> : Update Stok Otomatis
+
+@endum

@@ -1,0 +1,19 @@
+@startuml Lihat Dashboard Performa Platform
+|Admin Platform|
+start
+:Buka Dashboard Admin;
+|Sistem|
+:Ambil summary data global platform:
+- Total Users (Admin, Merchant, Customer)
+- Total Toko Aktif
+- Total Volume Transaksi (GMV Platform)
+- Total Pendapatan Komisi Platform;
+:Ambil data pertumbuhan merchant baru bulanan;
+|Database|
+:Eksekusi query analitik global;
+|Sistem|
+:Render chart pertumbuhan merchant;
+:Tampilkan tabel toko dengan omzet tertinggi;
+:Tampilkan log aktivitas moderasi terbaru;
+stop
+@endum

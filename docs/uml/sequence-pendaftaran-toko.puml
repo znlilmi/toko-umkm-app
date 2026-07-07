@@ -1,0 +1,34 @@
+@startuml Pendaftaran dan Pengaturan Toko
+actor Pengguna as user
+participant "Open Shop View" as view
+participant "Route (web.php)" as routes
+participant "ShopController" as controller
+participant "Shop Model" as model
+database "MySQL Database" as db
+
+user -> view : Isi Form Toko (Nama, Alamat, Logo, Banner)
+user -> view : Klik "Daftarkan Toko"
+view -> routes : POST /shops
+routes -> controller : store(request)
+activate controller
+
+controller -> controller : validate(request)
+alt input tidak valid
+  controller --> view : redirect back with validation errors
+  view --> user : Tampilkan pesan error
+else input valid
+  controller -> controller : upload logo & banner ke storage
+  controller -> controller : generate slug dari nama toko
+  
+  controller -> model : create(shop_data)
+  activate model
+  model -> db : INSERT INTO shops (user_id, name, slug, address, status='pending')
+  db --> model : success
+  model --> controller : shop object
+  deactivate model
+  
+  controller --> view : redirect('/dashboard')->with('status', 'Pendaftaran Toko Dikirim')
+  deactivate controller
+  view --> user : Tampilkan status: "Menunggu Verifikasi Admin"
+end
+@endum

@@ -1,0 +1,28 @@
+@startuml Unggah Bukti Pembayaran
+|Pembeli|
+start
+:Transfer nominal belanja sesuai invoice;
+:Buka menu "Pesanan Saya";
+:Pilih pesanan status "Menunggu Pembayaran";
+:Klik "Konfirmasi Pembayaran";
+:Isi form (bank asal, nama rekening, tgl transfer);
+:Unggah foto bukti transfer;
+:Klik "Kirim Bukti Pembayaran";
+|Sistem|
+:Validasi file gambar & data input;
+if (Valid?) then (Tidak)
+  :Tampilkan pesan error;
+  |Pembeli|
+  backward:Isi form (bank asal, nama rekening, tgl transfer);
+else (Ya)
+  |Sistem|
+  :Simpan bukti pembayaran di storage;
+  :Buat record di tabel `payments`;
+  :Update status pesanan menjadi "Menunggu Konfirmasi";
+  |Database|
+  :Simpan data pembayaran & update orders;
+  |Sistem|
+  :Kirim notifikasi ke Merchant;
+  stop
+endif
+@endum

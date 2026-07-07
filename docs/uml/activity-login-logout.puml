@@ -1,0 +1,36 @@
+@startuml Login dan Logout
+|Pengguna|
+start
+:Masukkan Email dan Password;
+:Klik tombol "Login";
+|Sistem|
+:Validasi input form;
+if (Input valid?) then (Tidak)
+  :Tampilkan pesan validasi error;
+  |Pengguna|
+  backward:Masukkan Email dan Password;
+else (Ya)
+  |Sistem|
+  :Cari email di database;
+  |Database|
+  :Kembalikan data user;
+  |Sistem|
+  :Cocokkan password hash;
+  if (Password cocok?) then (Tidak)
+    :Tampilkan error "Kredensial salah";
+    |Pengguna|
+    backward:Masukkan Email dan Password;
+  else (Ya)
+    |Sistem|
+    :Buat session / JWT token;
+    :Arahkan ke dashboard sesuai role;
+    |Pengguna|
+    :Gunakan aplikasi;
+    :Klik tombol "Logout";
+    |Sistem|
+    :Hapus session / token;
+    :Arahkan kembali ke halaman login;
+    stop
+  endif
+endif
+@endum

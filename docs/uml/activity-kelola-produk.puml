@@ -1,0 +1,43 @@
+@startuml Kelola Katalog Produk
+|Pemilik Toko (Merchant)|
+start
+:Buka menu "Manajemen Produk";
+|Sistem|
+:Tampilkan daftar produk toko terpaginasi;
+|Pemilik Toko (Merchant)|
+if (Pilih Aksi?) then (Tambah Produk Baru)
+  :Isi form (Nama, Kategori, Harga, Stok, Berat, Deskripsi, Foto);
+  :Klik "Simpan Produk";
+  |Sistem|
+  :Validasi input;
+  if (Valid?) then (Ya)
+    :Simpan file foto ke storage;
+    :INSERT record baru ke `products`;
+    :Catat log mutasi stok awal tipe IN di `stock_mutations`;
+    :Tampilkan pesan sukses;
+  else (Tidak)
+    :Tampilkan error validasi;
+  endif
+else (Edit / Hapus Produk)
+  if (Aksi == Edit) then (Ya)
+    :Ubah data pada form produk;
+    :Klik "Update";
+    |Sistem|
+    :Validasi & UPDATE record di `products`;
+    :Tampilkan pesan sukses;
+  else (Hapus)
+    |Pemilik Toko (Merchant)|
+    :Klik "Hapus" & Konfirmasi;
+    |Sistem|
+    :Cek apakah produk sedang ada dalam order aktif;
+    if (Ada order aktif?) then (Ya)
+      :Tampilkan pesan "Produk tidak bisa dihapus, hanya dinonaktifkan";
+      :Set `is_active` = false;
+    else (Tidak)
+      :DELETE record dari `products`;
+      :Tampilkan pesan sukses;
+    endif
+  endif
+endif
+stop
+@endum

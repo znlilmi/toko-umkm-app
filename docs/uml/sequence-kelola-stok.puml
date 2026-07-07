@@ -1,0 +1,46 @@
+@startuml Kelola Stok dan Log Mutasi
+actor Pemilik Toko as user
+participant "Inventory Ledger View" as view
+participant "Route (web.php)" as routes
+participant "InventoryController" as controller
+participant "DB Transaction" as db_tx
+participant "Product Model" as product_model
+participant "StockMutation Model" as mutation_model
+database "MySQL Database" as db
+
+user -> view : Masukkan penyesuaian stok (+/-) & keterangan
+user -> view : Klik "Simpan Penyesuaian"
+view -> routes : POST /merchant/inventory/adjust
+routes -> controller : adjust(request)
+activate controller
+
+controller -> controller : validate(request)
+controller -> db_tx : DB::beginTransaction()
+activate db_tx
+
+controller -> product_model : find(product_id)
+activate product_model
+product_model -> db : SELECT stock FROM products WHERE id = ?
+db --> product_model : data stok
+product_model --> controller : product object
+deactivate product_model
+
+controller -> product_model : update(stock = current_stock + adjustment)
+activate product_model
+product_model -> db : UPDATE products SET stock = ? WHERE id = ?
+db --> product_model : success
+deactivate product_model
+
+controller -> mutation_model : create(mutation_data)
+activate mutation_model
+mutation_model -> db : INSERT INTO stock_mutations (product_id, qty, type, description)
+db --> mutation_model : success
+deactivate mutation_model
+
+controller -> db_tx : DB::commit()
+deactivate db_tx
+
+controller --> view : redirect('/merchant/inventory')->with('success', 'Stok Diupdate')
+deactivate controller
+view --> user : Refresh tabel kartu stok & log mutasi terbaru
+@endum

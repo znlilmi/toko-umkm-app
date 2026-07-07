@@ -1,0 +1,25 @@
+@startuml Registrasi Akun
+|Pengguna|
+start
+:Mengisi form registrasi (Nama, Email, Password, No. HP);
+:Klik tombol "Daftar";
+|Sistem|
+:Validasi format email, nomor HP, dan kekuatan password;
+if (Data valid?) then (Tidak)
+  :Tampilkan pesan error validasi;
+  |Pengguna|
+  :Perbaiki data form;
+  backward:Mengisi form registrasi (Nama, Email, Password, No. HP);
+else (Ya)
+  |Sistem|
+  :Enkripsi password (bcrypt);
+  :Kirim query INSERT user baru;
+  |Database|
+  :Simpan data user (role: customer);
+  :Kembalikan status sukses;
+  |Sistem|
+  :Buat session login user;
+  :Tampilkan halaman utama (Home);
+  stop
+endif
+@endum

@@ -1,0 +1,36 @@
+@startuml Lihat Dashboard Performa Platform
+actor Admin Platform as user
+participant "Admin Dashboard View" as view
+participant "Route (web.php)" as routes
+participant "AdminDashboardController" as controller
+database "MySQL Database" as db
+
+user -> view : Buka halaman dashboard admin
+view -> routes : GET /admin/dashboard
+routes -> controller : index()
+activate controller
+
+controller -> db : SELECT COUNT(id) FROM users
+activate db
+db --> controller : total users count
+deactivate db
+
+controller -> db : SELECT COUNT(id) FROM shops WHERE is_active = true
+activate db
+db --> controller : active shops count
+deactivate db
+
+controller -> db : SELECT SUM(grand_total) FROM orders WHERE status = 'completed'
+activate db
+db --> controller : platform GMV
+deactivate db
+
+controller -> db : SELECT SUM(amount) FROM payments WHERE payment_status = 'paid'
+activate db
+db --> controller : completed commission sum
+deactivate db
+
+controller --> view : view('admin.dashboard', stats)
+deactivate controller
+view --> user : Tampilkan dashboard data statistik global platform
+@endum

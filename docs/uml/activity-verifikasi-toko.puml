@@ -1,0 +1,27 @@
+@startuml Moderasi dan Verifikasi Toko
+|Admin Platform|
+start
+:Buka Dashboard Admin -> Menu "Verifikasi Toko";
+|Sistem|
+:Tampilkan daftar toko berstatus "Pending Verification";
+|Admin Platform|
+:Pilih salah satu toko;
+:Review nama toko, alamat, logo, dan keabsahan usaha;
+if (Toko Layak?) then (Ya)
+  :Klik "Verifikasi / Setujui";
+  |Sistem|
+  :Update `is_active` = true di tabel `shops`;
+  :Kirim email/notifikasi sukses ke Pemilik Toko;
+else (Tidak / Melanggar)
+  |Admin Platform|
+  :Klik "Tolak" & isi alasan penolakan;
+  |Sistem|
+  :Update status toko menjadi "Rejected";
+  :Kirim email berisi alasan penolakan pendaftaran;
+endif
+|Database|
+:Simpan status perubahan data toko;
+|Sistem|
+:Refresh daftar toko pending;
+stop
+@endum

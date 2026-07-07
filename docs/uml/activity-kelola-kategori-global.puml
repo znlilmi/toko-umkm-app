@@ -1,0 +1,38 @@
+@startuml Kelola Kategori Global
+|Admin Platform|
+start
+:Buka menu "Kelola Kategori Global";
+|Sistem|
+:Tampilkan struktur pohon kategori saat ini;
+|Admin Platform|
+if (Pilih Aksi?) then (Tambah Kategori)
+  :Masukkan nama kategori global & slug;
+  :Pilih sub-kategori (jika ada);
+  :Klik "Simpan";
+  |Sistem|
+  :Validasi keunikan nama kategori;
+  :INSERT record baru ke `categories`;
+else (Edit / Hapus Kategori)
+  if (Aksi == Edit) then (Ya)
+    :Ubah nama/slug kategori;
+    :Klik "Update";
+    |Sistem|
+    :UPDATE record di `categories`;
+  else (Hapus)
+    |Admin Platform|
+    :Klik "Hapus Kategori" & Konfirmasi;
+    |Sistem|
+    :Cek apakah ada produk terhubung ke kategori ini;
+    if (Ada produk?) then (Ya)
+      :Tampilkan error "Kategori tidak bisa dihapus karena masih digunakan";
+    else (Tidak)
+      :DELETE record dari `categories`;
+    endif
+  endif
+endif
+|Database|
+:Simpan perubahan kategori global;
+|Sistem|
+:Refresh halaman struktur kategori;
+stop
+@endum

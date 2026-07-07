@@ -1,0 +1,21 @@
+@startuml Ekspor Kartu Mutasi Stok (Excel)
+|Pemilik Toko (Merchant)|
+start
+:Buka menu "Laporan Stok";
+:Pilih produk spesifik;
+:Pilih periode bulan/tahun;
+:Klik "Ekspor Kartu Mutasi (.xlsx)";
+|Sistem|
+:Query tabel `stock_mutations` filter product_id & date range;
+|Database|
+:Kembalikan record mutasi urut kronologis;
+|Sistem|
+:Instansiasi Excel writer;
+:Tulis header (Tanggal, Keterangan, Stok Masuk, Stok Keluar, Saldo Akhir);
+:Hitung balance berjalan & isi cell;
+:Format file xlsx;
+:Kirim file ke browser;
+|Pemilik Toko (Merchant)|
+:Download & simpan file kartu mutasi produk;
+stop
+@endum

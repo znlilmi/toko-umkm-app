@@ -1,0 +1,31 @@
+@startuml Ekspor Kartu Mutasi Stok
+actor Pemilik Toko as user
+participant "Inventory Logs View" as view
+participant "Route (web.php)" as routes
+participant "ExportController" as controller
+participant "StockMutation Model" as model
+participant "Maatwebsite Excel" as excel
+database "MySQL Database" as db
+
+user -> view : Pilih produk, bulan & klik "Ekspor Kartu Mutasi"
+view -> routes : GET /merchant/reports/mutations-excel?product_id=x
+routes -> controller : exportMutationsExcel(request)
+activate controller
+
+controller -> model : where('product_id', id)->orderBy('created_at')
+activate model
+model -> db : SELECT * FROM stock_mutations WHERE product_id=? ORDER BY created_at ASC
+db --> model : data log mutasi kronologis
+model --> controller : mutation collection
+deactivate model
+
+controller -> excel : download(new MutationExport(data), 'kartu-mutasi.xlsx')
+activate excel
+excel -> excel : generateSpreadsheetFile()
+excel --> controller : excel stream
+deactivate excel
+
+controller --> view : download response (kartu-mutasi.xlsx)
+deactivate controller
+view --> user : Browser mengunduh file kartu-mutasi.xlsx secara otomatis
+@endum

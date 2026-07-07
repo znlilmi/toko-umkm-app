@@ -1,0 +1,31 @@
+@startuml Cetak Laporan Komisi dan Performa
+actor Admin Platform as user
+participant "Admin Finance View" as view
+participant "Route (web.php)" as routes
+participant "AdminReportController" as controller
+participant "Order Model" as model
+participant "Barryvdh DomPDF" as dompdf
+database "MySQL Database" as db
+
+user -> view : Klik "Ekspor Laporan Komisi (PDF)"
+view -> routes : GET /admin/reports/commission-pdf
+routes -> controller : commissionPdf()
+activate controller
+
+controller -> model : select orders join shops & user filter status='completed'
+activate model
+model -> db : SELECT orders.*, shops.name FROM orders JOIN shops ON... WHERE status='completed'
+db --> model : data komisi per toko global
+model --> controller : orders collection
+deactivate model
+
+controller -> dompdf : loadView('pdf.admin_commission', orders)
+activate dompdf
+dompdf -> dompdf : renderPDF()
+dompdf --> controller : raw PDF stream
+deactivate dompdf
+
+controller --> view : download response (laporan-komisi.pdf)
+deactivate controller
+view --> user : Download PDF komisi platform dimulai otomatis
+@endum

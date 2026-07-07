@@ -1,0 +1,27 @@
+@startuml Kelola Stok dan Log Mutasi
+|Pemilik Toko (Merchant)|
+start
+:Buka halaman "Manajemen Stok / Mutasi";
+|Sistem|
+:Ambil histori mutasi stok produk dari database;
+|Database|
+:Kembalikan data `stock_mutations` terurut terbaru;
+|Sistem|
+:Tampilkan tabel kartu stok dengan kolom In/Out/Balance;
+|Pemilik Toko (Merchant)|
+:Klik "Penyesuaian Stok" (Stock Adjustment);
+:Pilih Produk;
+:Masukkan jumlah perubahan (+ / -) & Keterangan (e.g. stockopname, barang rusak);
+:Klik "Simpan";
+|Sistem|
+start transaction;
+:Kalkulasi stok akhir baru;
+:Update kolom `stock` di tabel `products`;
+:INSERT record mutasi baru ke tabel `stock_mutations`;
+|Database|
+:Simpan perubahan produk & mutasi;
+commit transaction;
+|Sistem|
+:Tampilkan pesan sukses & refresh tabel mutasi;
+stop
+@endum

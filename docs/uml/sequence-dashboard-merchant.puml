@@ -1,0 +1,32 @@
+@startuml Lihat Dashboard Finansial dan Grafik
+actor Pemilik Toko as user
+participant "Seller Dashboard View" as view
+participant "Route (web.php)" as routes
+participant "MerchantDashboardController" as controller
+database "MySQL Database" as db
+
+user -> view : Akses dashboard seller
+view -> routes : GET /merchant/dashboard
+routes -> controller : index()
+activate controller
+
+controller -> db : SELECT SUM(grand_total) FROM orders WHERE status='completed' AND shop_id=?
+activate db
+db --> controller : total revenue
+deactivate db
+
+controller -> db : SELECT COUNT(id) FROM orders WHERE shop_id=?
+activate db
+db --> controller : transaction count
+deactivate db
+
+controller -> db : SELECT date, SUM(grand_total) FROM orders WHERE shop_id=? GROUP BY date
+activate db
+db --> controller : monthly sales trend dataset
+deactivate db
+
+controller --> view : view('merchant.dashboard', data)
+deactivate controller
+view -> view : Initialize Chart.js with dataset
+view --> user : Tampilkan grafik tren penjualan harian & ringkasan finansial
+@endum

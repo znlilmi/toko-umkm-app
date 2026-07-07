@@ -1,0 +1,25 @@
+@startuml Moderasi dan Verifikasi Toko
+actor Admin Platform as user
+participant "Admin Verification View" as view
+participant "Route (web.php)" as routes
+participant "AdminShopController" as controller
+participant "Shop Model" as model
+database "MySQL Database" as db
+
+user -> view : Klik "Setujui" pada pendaftaran Toko pending
+view -> routes : PATCH /admin/shops/{id}/verify
+routes -> controller : verify(id)
+activate controller
+
+controller -> model : find(id)->update(is_active=true)
+activate model
+model -> db : UPDATE shops SET is_active = true WHERE id = ?
+db --> model : success
+model --> controller : shop object
+deactivate model
+
+controller -> controller : sendEmailNotificationToMerchant()
+controller --> view : redirect('/admin/shops')->with('success', 'Toko Diaktifkan')
+deactivate controller
+view --> user : Tampilkan daftar terupdate, Toko kini berstatus Aktif
+@endum

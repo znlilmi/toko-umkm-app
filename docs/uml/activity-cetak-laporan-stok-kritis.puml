@@ -1,0 +1,16 @@
+@startuml Cetak Laporan Stok Kritis (PDF)
+|Pemilik Toko (Merchant)|
+start
+:Buka menu "Laporan Stok";
+:Klik "Ekspor Laporan Stok Kritis (PDF)";
+|Sistem|
+:Query database cari produk toko yang stok <= 5 (atau threshold);
+|Database|
+:Kembalikan daftar produk low-stock;
+|Sistem|
+:Generate layout PDF tabel peringatan stok kritis;
+:Download file PDF ke browser merchant;
+|Pemilik Toko (Merchant)|
+:Buka laporan PDF untuk daftar restock;
+stop
+@endum

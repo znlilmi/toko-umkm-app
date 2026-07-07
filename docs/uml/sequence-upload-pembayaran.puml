@@ -1,0 +1,40 @@
+@startuml Unggah Bukti Pembayaran
+actor Pembeli as user
+participant "Upload Payment View" as view
+participant "Route (web.php)" as routes
+participant "PaymentController" as controller
+participant "Payment Model" as payment_model
+participant "Order Model" as order_model
+database "MySQL Database" as db
+
+user -> view : Unggah foto bukti transfer & isi detail transfer
+user -> view : Klik "Kirim Bukti Pembayaran"
+view -> routes : POST /orders/{id}/pay
+routes -> controller : store(request, id)
+activate controller
+
+controller -> controller : validate(request)
+alt input tidak valid
+  controller --> view : redirect back with errors
+  view --> user : Tampilkan pesan error
+else input valid
+  controller -> controller : upload bukti transfer ke storage
+  controller -> payment_model : create(payment_data)
+  activate payment_model
+  payment_model -> db : INSERT INTO payments (order_id, amount, proof_of_payment)
+  db --> payment_model : success
+  payment_model --> controller : payment object
+  deactivate payment_model
+  
+  controller -> order_model : find(id)->update(status='pending_confirmation')
+  activate order_model
+  order_model -> db : UPDATE orders SET status = 'pending_confirmation' WHERE id = ?
+  db --> order_model : success
+  order_model --> controller : order object
+  deactivate order_model
+  
+  controller --> view : redirect('/orders')->with('success', 'Bukti dikirim')
+  deactivate controller
+  view --> user : Tampilkan status pesanan: "Menunggu Verifikasi Penjual"
+end
+@endum

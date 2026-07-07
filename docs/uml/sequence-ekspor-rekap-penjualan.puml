@@ -1,0 +1,31 @@
+@startuml Ekspor Rekap Penjualan Akuntansi
+actor Pemilik Toko as user
+participant "Sales Report View" as view
+participant "Route (web.php)" as routes
+participant "ExportController" as controller
+participant "Order Model" as model
+participant "Maatwebsite Excel" as excel
+database "MySQL Database" as db
+
+user -> view : Klik "Ekspor Excel (.xlsx)"
+view -> routes : GET /merchant/reports/sales-excel
+routes -> controller : exportSalesExcel()
+activate controller
+
+controller -> model : with('items.product')->where('status', 'completed')
+activate model
+model -> db : SELECT * FROM orders JOIN order_items...
+db --> model : dataset penjualan detail (HPP & Harga Jual)
+model --> controller : sales record collection
+deactivate model
+
+controller -> excel : download(new SalesExport(data), 'penjualan.xlsx')
+activate excel
+excel -> excel : generateSpreadsheetFile()
+excel --> controller : excel stream
+deactivate excel
+
+controller --> view : download response (penjualan.xlsx)
+deactivate controller
+view --> user : File Excel berekstensi .xlsx sukses diunduh browser
+@endum

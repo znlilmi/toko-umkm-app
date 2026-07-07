@@ -1,0 +1,36 @@
+@startuml Kelola Kategori Global
+actor Admin Platform as user
+participant "Category View" as view
+participant "Route (web.php)" as routes
+participant "AdminCategoryController" as controller
+participant "Category Model" as model
+participant "Product Model" as product
+database "MySQL Database" as db
+
+user -> view : Klik "Hapus Kategori" pada kategori tertentu
+view -> routes : DELETE /admin/categories/{id}
+routes -> controller : destroy(id)
+activate controller
+
+controller -> product : where('category_id', id)->exists()
+activate product
+product -> db : SELECT EXISTS(SELECT * FROM products WHERE category_id = ?)
+db --> product : boolean (true/false)
+product --> controller : boolean
+deactivate product
+
+alt kategori masih memiliki produk aktif
+  controller --> view : redirect back with error "Kategori tidak kosong"
+  view --> user : Tampilkan pesan larangan menghapus
+else kategori kosong
+  controller -> model : find(id)->delete()
+  activate model
+  model -> db : DELETE FROM categories WHERE id = ?
+  db --> model : success
+  model --> controller : success
+  deactivate model
+  controller --> view : redirect('/admin/categories')->with('success', 'Dihapus')
+  deactivate controller
+  view --> user : Tampilkan struktur kategori global yang sudah terupdate
+end
+@endum

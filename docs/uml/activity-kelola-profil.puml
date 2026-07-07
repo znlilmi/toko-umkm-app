@@ -1,0 +1,34 @@
+@startuml Kelola Profil dan Alamat
+|Pengguna|
+start
+:Buka menu "Profil Saya";
+|Sistem|
+:Ambil data profil & alamat dari database;
+|Database|
+:Kembalikan data profil;
+|Sistem|
+:Tampilkan form profil;
+|Pengguna|
+:Ubah data (Nama, Telepon, Foto, Alamat Pengiriman);
+:Klik "Simpan Perubahan";
+|Sistem|
+:Validasi data input;
+if (Data valid?) then (Tidak)
+  :Tampilkan pesan error;
+  |Pengguna|
+  backward:Ubah data (Nama, Telepon, Foto, Alamat Pengiriman);
+else (Ya)
+  |Sistem|
+  if (Ada upload foto baru?) then (Ya)
+    :Upload foto ke storage;
+    :Hapus foto lama dari storage;
+  else (Tidak)
+  endif
+  :Kirim query UPDATE profil;
+  |Database|
+  :Simpan perubahan ke tabel users & addresses;
+  |Sistem|
+  :Tampilkan pesan sukses "Profil diperbarui";
+  stop
+endif
+@endum

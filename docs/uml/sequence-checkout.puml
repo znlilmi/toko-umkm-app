@@ -1,0 +1,75 @@
+@startuml Checkout Pesanan (Split Order)
+actor Pembeli as user
+participant "Checkout View" as view
+participant "Route (web.php)" as routes
+participant "CheckoutController" as controller
+participant "OrderService" as service
+participant "DB Transaction" as db_tx
+participant "Product Model" as product_model
+participant "Order Model" as order_model
+participant "OrderItem Model" as item_model
+participant "StockMutation Model" as mutation_model
+database "MySQL Database" as db
+
+user -> view : Klik "Buat Pesanan" setelah isi alamat & kurir
+view -> routes : POST /checkout
+routes -> controller : store(request)
+activate controller
+
+controller -> service : createOrder(customer, items, address, courier)
+activate service
+
+service -> db_tx : DB::beginTransaction()
+activate db_tx
+
+service -> product_model : lockForUpdate()->find(product_id)
+activate product_model
+product_model -> db : SELECT * FROM products WHERE id = ? FOR UPDATE
+activate db
+db --> product_model : data produk & stok terbaru
+deactivate db
+product_model --> service : product object
+deactivate product_model
+
+alt stok tidak mencukupi
+  service -> db_tx : DB::rollBack()
+  service --> controller : throw StockException
+  controller --> view : redirect('/cart')->with('error', 'Stok habis/berubah')
+  view --> user : Tampilkan pesan error stok
+else stok mencukupi
+  service -> order_model : create(order_header_per_toko)
+  activate order_model
+  order_model -> db : INSERT INTO orders (invoice, shop_id, customer_id, total, status='pending_payment')
+  db --> order_model : order ID
+  order_model --> service : order object
+  deactivate order_model
+  
+  service -> item_model : create(line_items)
+  activate item_model
+  item_model -> db : INSERT INTO order_items (order_id, product_id, qty, price)
+  db --> item_model : success
+  deactivate item_model
+
+  service -> product_model : decrement('stock', qty)
+  activate product_model
+  product_model -> db : UPDATE products SET stock = stock - qty WHERE id = ?
+  db --> product_model : success
+  deactivate product_model
+
+  service -> mutation_model : create(mutation_log)
+  activate mutation_model
+  mutation_model -> db : INSERT INTO stock_mutations (product_id, qty, type='OUT', desc)
+  db --> mutation_model : success
+  deactivate mutation_model
+
+  service -> db_tx : DB::commit()
+  deactivate db_tx
+  
+  service --> controller : orders array
+  deactivate service
+  
+  controller --> view : redirect('/orders/payment-instruction')
+  deactivate controller
+  view --> user : Tampilkan Invoice & Instruksi Pembayaran (Timer 1 Jam aktif)
+end
+@endum
