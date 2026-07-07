@@ -1,0 +1,188 @@
+// DBML (Database Markup Language) Specification for TokoKita Laravel 10 Database Schema
+// Compatible with dbdiagram.io
+
+Table users {
+  id bigint [pk, increment]
+  name varchar(255) [not null]
+  email varchar(255) [unique, not null]
+  email_verified_at timestamp [null]
+  password varchar(255) [not null]
+  phone varchar(20) [null]
+  role varchar(50) [not null, default: 'customer', note: 'Options: admin, merchant, customer']
+  profile_photo varchar(255) [null]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp [null, note: 'Soft deletes for users']
+}
+
+Table addresses {
+  id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.id]
+  recipient_name varchar(255) [not null]
+  phone varchar(20) [not null]
+  address_line text [not null]
+  city_id integer [not null]
+  is_default boolean [not null, default: false]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table shops {
+  id bigint [pk, increment]
+  user_id bigint [unique, not null, ref: - users.id]
+  name varchar(255) [not null]
+  slug varchar(255) [unique, not null]
+  description text [null]
+  logo varchar(255) [null]
+  banner varchar(255) [null]
+  balance decimal(15,2) [not null, default: 0.00]
+  address text [not null]
+  city_id integer [not null]
+  status varchar(50) [not null, default: 'pending', note: 'Options: pending, active, rejected, suspended']
+  is_active boolean [not null, default: false]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp [null, note: 'Soft deletes for shops']
+}
+
+Table categories {
+  id bigint [pk, increment]
+  name varchar(255) [not null]
+  slug varchar(255) [unique, not null]
+  parent_id bigint [null, ref: > categories.id]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table products {
+  id bigint [pk, increment]
+  shop_id bigint [not null, ref: > shops.id]
+  name varchar(255) [not null]
+  slug varchar(255) [unique, not null]
+  description text [null]
+  price decimal(15,2) [not null]
+  stock integer [not null, default: 0]
+  weight integer [not null, note: 'Weight in grams']
+  is_active boolean [not null, default: true]
+  rating decimal(3,2) [not null, default: 0.00]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp [null, note: 'Soft deletes for products']
+
+  Indexes {
+    (shop_id, is_active, stock)
+  }
+}
+
+Table category_product {
+  category_id bigint [not null, ref: > categories.id]
+  product_id bigint [not null, ref: > products.id]
+
+  Indexes {
+    (category_id, product_id) [pk]
+  }
+}
+
+Table carts {
+  id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.id]
+  product_id bigint [not null, ref: > products.id]
+  qty integer [not null, default: 1]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table orders {
+  id bigint [pk, increment]
+  invoice_number varchar(255) [unique, not null]
+  customer_id bigint [not null, ref: > users.id]
+  shop_id bigint [not null, ref: > shops.id]
+  total_amount decimal(15,2) [not null, note: 'Subtotal of items before shipping']
+  shipping_cost decimal(15,2) [not null]
+  grand_total decimal(15,2) [not null, note: 'total_amount + shipping_cost']
+  status varchar(50) [not null, default: 'pending_payment', note: 'Options: pending_payment, pending_confirmation, processing, shipped, completed, cancelled']
+  shipping_address text [not null]
+  courier varchar(100) [not null]
+  tracking_number varchar(255) [null]
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    (shop_id, status, created_at)
+    (status, created_at)
+  }
+}
+
+Table order_items {
+  id bigint [pk, increment]
+  order_id bigint [not null, ref: > orders.id]
+  product_id bigint [not null, ref: > products.id]
+  qty integer [not null]
+  price decimal(15,2) [not null, note: 'Snapshot of product price at purchase']
+  subtotal decimal(15,2) [not null, note: 'qty * price']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table payments {
+  id bigint [pk, increment]
+  order_id bigint [unique, not null, ref: - orders.id]
+  payment_method varchar(100) [not null, default: 'transfer']
+  payment_status varchar(50) [not null, default: 'pending', note: 'Options: pending, paid, expired, failed']
+  amount_paid decimal(15,2) [not null]
+  proof_of_payment varchar(255) [null]
+  paid_at timestamp [null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table reviews {
+  id bigint [pk, increment]
+  product_id bigint [not null, ref: > products.id]
+  order_item_id bigint [unique, not null, ref: - order_items.id]
+  rating integer [not null, note: 'Rating scale 1-5']
+  comment text [null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table stock_mutations {
+  id bigint [pk, increment]
+  product_id bigint [not null, ref: > products.id]
+  qty integer [not null, note: 'Amount of stock added or subtracted']
+  type varchar(10) [not null, note: 'Options: IN, OUT']
+  description varchar(255) [null, note: 'e.g., Stock Awal, Penyesuaian, Penjualan, Pembatalan']
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    (product_id, created_at)
+  }
+}
+
+Table daily_sales_summaries {
+  id bigint [pk, increment]
+  shop_id bigint [not null, ref: > shops.id]
+  date date [not null]
+  total_orders integer [not null, default: 0]
+  total_revenue decimal(15,2) [not null, default: 0.00]
+  total_commission decimal(15,2) [not null, default: 0.00]
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    (shop_id, date) [unique]
+  }
+}
+
+Table wishlists {
+  id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.id]
+  product_id bigint [not null, ref: > products.id]
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    (user_id, product_id) [unique]
+  }
+}
