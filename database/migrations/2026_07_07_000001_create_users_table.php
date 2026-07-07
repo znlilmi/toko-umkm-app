@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('phone', 20)->nullable();
             $table->string('role', 50)->default('customer'); // admin, merchant, customer
             $table->string('profile_photo')->nullable();
+            $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
         });
