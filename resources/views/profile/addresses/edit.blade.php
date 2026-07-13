@@ -45,8 +45,13 @@
 
                 <!-- City ID -->
                 <div>
-                    <label for="city_id" class="block text-sm font-semibold text-slate-700 mb-2">Pilih Kota (ID Kota RajaOngkir)</label>
-                    <input type="number" name="city_id" id="city_id" value="{{ old('city_id', $address->city_id) }}" required class="w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl py-2.5 text-sm">
+                    <label for="city_id" class="block text-sm font-semibold text-slate-700 mb-2">Pilih Kota</label>
+                    <select name="city_id" id="city_id" required class="w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl py-2.5 text-sm bg-white">
+                        <option value="">-- Pilih Kota --</option>
+                        @foreach(config('cities') as $id => $name)
+                            <option value="{{ $id }}" {{ old('city_id', $address->city_id) == $id ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
+                    </select>
                     @error('city_id')
                         <span class="text-xs text-rose-500 block mt-1">{{ $message }}</span>
                     @enderror

@@ -36,7 +36,7 @@ export class AddressPage {
     await this.recipientInput.fill(data.recipient);
     await this.phoneInput.fill(data.phone);
     await this.addressLineInput.fill(data.addressLine);
-    await this.cityIdInput.fill(data.cityId.toString());
+    await this.cityIdInput.selectOption(data.cityId.toString());
     
     if (data.isDefault) {
       await this.isDefaultCheckbox.check();
@@ -61,7 +61,7 @@ export class AddressPage {
     if (updatedData.recipient !== undefined) await this.recipientInput.fill(updatedData.recipient);
     if (updatedData.phone !== undefined) await this.phoneInput.fill(updatedData.phone);
     if (updatedData.addressLine !== undefined) await this.addressLineInput.fill(updatedData.addressLine);
-    if (updatedData.cityId !== undefined) await this.cityIdInput.fill(updatedData.cityId.toString());
+    if (updatedData.cityId !== undefined) await this.cityIdInput.selectOption(updatedData.cityId.toString());
     
     if (updatedData.isDefault !== undefined) {
       if (updatedData.isDefault) {
