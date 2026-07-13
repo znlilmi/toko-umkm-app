@@ -13,19 +13,14 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['shop', 'categories'])
+        $products = Product::with(['shop', 'categories'])
             ->where('is_active', true)
-            ->whereHas('shop', fn ($q) => $q->where('is_active', true));
+            ->whereHas('shop', fn ($q) => $q->where('is_active', true))
+            ->filter($request->only(['q', 'category', 'min_price', 'max_price']))
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
 
-        if ($request->filled('q')) {
-            $query->where('name', 'like', '%' . $request->q . '%');
-        }
-
-        if ($request->filled('category')) {
-            $query->whereHas('categories', fn ($q) => $q->where('slug', $request->category));
-        }
-
-        $products   = $query->latest()->paginate(20)->withQueryString();
         $categories = Category::whereNull('parent_id')->with('children')->get();
 
         return view('products.index', compact('products', 'categories'));

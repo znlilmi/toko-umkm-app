@@ -49,7 +49,7 @@ class MerchantProductController extends Controller
         $shop = $this->getShop();
         $data = $request->validated();
 
-        $product = $shop->products()->create(array_except($data, ['category_ids']));
+        $product = $shop->products()->create(\Illuminate\Support\Arr::except($data, ['category_ids']));
         $product->categories()->sync($data['category_ids']);
 
         return redirect()->route('merchant.products.index')
@@ -79,7 +79,7 @@ class MerchantProductController extends Controller
 
         $data = $request->validated();
 
-        $product->update(array_except($data, ['category_ids']));
+        $product->update(\Illuminate\Support\Arr::except($data, ['category_ids']));
 
         if (isset($data['category_ids'])) {
             $product->categories()->sync($data['category_ids']);

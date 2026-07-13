@@ -13,13 +13,14 @@
             <h1 class="text-xl font-bold text-slate-800 mb-2">Tambah Produk Baru</h1>
             <p class="text-xs text-slate-400 mb-6">Lengkapi data produk untuk mulai memasarkannya secara publik.</p>
 
-            <form action="{{ route('merchant.products.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route('merchant.products.store') }}" method="POST" x-data="productForm()" @submit="submitForm($event)" class="space-y-6">
                 @csrf
 
                 <!-- Product Name -->
                 <div>
                     <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Nama Produk</label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}" required oninput="document.getElementById('slug').value = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')" class="w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl py-2.5 text-sm">
+                    <input type="text" name="name" id="name" x-model="name" @input="validateName(); updateSlug()" required class="w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl py-2.5 text-sm">
+                    <span x-show="errors.name" x-text="errors.name" id="error-name" class="text-xs text-rose-500 block mt-1"></span>
                     @error('name')
                         <span class="text-xs text-rose-500 block mt-1">{{ $message }}</span>
                     @enderror
@@ -28,7 +29,7 @@
                 <!-- Slug -->
                 <div>
                     <label for="slug" class="block text-sm font-semibold text-slate-700 mb-2">Slug Produk (URL Unik)</label>
-                    <input type="text" name="slug" id="slug" value="{{ old('slug') }}" required class="w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl py-2.5 text-sm">
+                    <input type="text" name="slug" id="slug" x-model="slug" required class="w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl py-2.5 text-sm">
                     @error('slug')
                         <span class="text-xs text-rose-500 block mt-1">{{ $message }}</span>
                     @enderror
@@ -46,7 +47,8 @@
                 <!-- Price -->
                 <div>
                     <label for="price" class="block text-sm font-semibold text-slate-700 mb-2">Harga Jual (Rp)</label>
-                    <input type="number" name="price" id="price" value="{{ old('price') }}" required min="0" class="w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl py-2.5 text-sm">
+                    <input type="number" name="price" id="price" x-model="price" @input="validatePrice()" required class="w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl py-2.5 text-sm">
+                    <span x-show="errors.price" x-text="errors.price" id="error-price" class="text-xs text-rose-500 block mt-1"></span>
                     @error('price')
                         <span class="text-xs text-rose-500 block mt-1">{{ $message }}</span>
                     @enderror
@@ -55,7 +57,8 @@
                 <!-- Stock -->
                 <div>
                     <label for="stock" class="block text-sm font-semibold text-slate-700 mb-2">Stok Awal</label>
-                    <input type="number" name="stock" id="stock" value="{{ old('stock', 0) }}" required min="0" class="w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl py-2.5 text-sm">
+                    <input type="number" name="stock" id="stock" x-model="stock" @input="validateStock()" required class="w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl py-2.5 text-sm">
+                    <span x-show="errors.stock" x-text="errors.stock" id="error-stock" class="text-xs text-rose-500 block mt-1"></span>
                     @error('stock')
                         <span class="text-xs text-rose-500 block mt-1">{{ $message }}</span>
                     @enderror
@@ -99,4 +102,64 @@
             </form>
         </div>
     </div>
+
+    <script>
+    function productForm() {
+        return {
+            name: '{{ old('name', '') }}',
+            slug: '{{ old('slug', '') }}',
+            price: '{{ old('price', '') }}',
+            stock: '{{ old('stock', '0') }}',
+            errors: {
+                name: '',
+                price: '',
+                stock: ''
+            },
+            updateSlug() {
+                this.slug = this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            },
+            validateName() {
+                if (!this.name || this.name.length < 5) {
+                    this.errors.name = 'Nama produk minimal harus 5 karakter.';
+                } else {
+                    this.errors.name = '';
+                }
+            },
+            validatePrice() {
+                const priceVal = parseFloat(this.price);
+                if (this.price === '' || isNaN(priceVal)) {
+                    this.errors.price = 'Harga jual wajib diisi.';
+                } else if (priceVal < 0) {
+                    this.errors.price = 'Harga jual tidak boleh negatif.';
+                } else {
+                    this.errors.price = '';
+                }
+            },
+            validateStock() {
+                if (this.stock === '') {
+                    this.errors.stock = 'Stok wajib diisi.';
+                    return;
+                }
+                const stockVal = parseFloat(this.stock);
+                if (isNaN(stockVal)) {
+                    this.errors.stock = 'Stok wajib diisi.';
+                } else if (stockVal < 0) {
+                    this.errors.stock = 'Stok tidak boleh negatif.';
+                } else if (!Number.isInteger(stockVal)) {
+                    this.errors.stock = 'Stok harus berupa angka bulat.';
+                } else {
+                    this.errors.stock = '';
+                }
+            },
+            submitForm(e) {
+                this.validateName();
+                this.validatePrice();
+                this.validateStock();
+                if (this.errors.name || this.errors.price || this.errors.stock) {
+                    e.preventDefault();
+                }
+            }
+        }
+    }
+    </script>
 </x-app-layout>

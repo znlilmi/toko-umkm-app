@@ -12,6 +12,12 @@
                 @if(request('category'))
                     <input type="hidden" name="category" value="{{ request('category') }}">
                 @endif
+                @if(request('min_price'))
+                    <input type="hidden" name="min_price" value="{{ request('min_price') }}">
+                @endif
+                @if(request('max_price'))
+                    <input type="hidden" name="max_price" value="{{ request('max_price') }}">
+                @endif
                 <button type="submit" class="bg-white text-indigo-700 hover:bg-indigo-50 px-4 py-2 rounded-lg text-sm font-semibold transition">
                     Cari
                 </button>
@@ -20,22 +26,23 @@
 
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Sidebar Filters -->
-            <div class="w-full lg:w-64 flex-shrink-0">
-                <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm sticky top-24">
+            <div class="w-full lg:w-64 flex-shrink-0 space-y-6 sticky top-24">
+                <!-- Kategori Filter -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
                     <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Kategori</h3>
                     <div class="space-y-1">
-                        <a href="{{ route('products.index', request()->only('q')) }}" class="flex items-center justify-between px-3 py-2 text-sm rounded-lg transition {{ !request('category') ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <a href="{{ route('products.index', request()->only(['q', 'min_price', 'max_price'])) }}" class="flex items-center justify-between px-3 py-2 text-sm rounded-lg transition {{ !request('category') ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
                             <span>Semua Kategori</span>
                         </a>
                         @foreach($categories as $category)
-                            <a href="{{ route('products.index', array_merge(request()->only('q'), ['category' => $category->slug])) }}" class="flex items-center justify-between px-3 py-2 text-sm rounded-lg transition {{ request('category') === $category->slug ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
+                            <a href="{{ route('products.index', array_merge(request()->only(['q', 'min_price', 'max_price']), ['category' => $category->slug])) }}" class="flex items-center justify-between px-3 py-2 text-sm rounded-lg transition {{ request('category') === $category->slug ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
                                 <span>{{ $category->name }}</span>
                             </a>
                             <!-- Child Categories -->
                             @if($category->children->count() > 0)
                                 <div class="pl-4 space-y-1 mt-1">
                                     @foreach($category->children as $child)
-                                        <a href="{{ route('products.index', array_merge(request()->only('q'), ['category' => $child->slug])) }}" class="flex items-center justify-between px-3 py-1.5 text-xs rounded-lg transition {{ request('category') === $child->slug ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <a href="{{ route('products.index', array_merge(request()->only(['q', 'min_price', 'max_price']), ['category' => $child->slug])) }}" class="flex items-center justify-between px-3 py-1.5 text-xs rounded-lg transition {{ request('category') === $child->slug ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-500 hover:bg-slate-50' }}">
                                             <span>{{ $child->name }}</span>
                                         </a>
                                     @endforeach
@@ -43,6 +50,47 @@
                             @endif
                         @endforeach
                     </div>
+                </div>
+
+                <!-- Rentang Harga Filter -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Rentang Harga</h3>
+                    <form action="{{ route('products.index') }}" method="GET" class="space-y-4">
+                        @if(request('q'))
+                            <input type="hidden" name="q" value="{{ request('q') }}">
+                        @endif
+                        @if(request('category'))
+                            <input type="hidden" name="category" value="{{ request('category') }}">
+                        @endif
+                        
+                        <div class="space-y-2">
+                            <div>
+                                <label for="min_price" class="text-xs text-slate-400 block mb-1">Harga Minimum</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2 text-xs text-slate-400 font-semibold">Rp</span>
+                                    <input type="number" name="min_price" id="min_price" value="{{ request('min_price') }}" placeholder="Min" class="w-full pl-9 pr-3 py-1.5 border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 text-xs rounded-lg placeholder-slate-300">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="max_price" class="text-xs text-slate-400 block mb-1">Harga Maksimum</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2 text-xs text-slate-400 font-semibold">Rp</span>
+                                    <input type="number" name="max_price" id="max_price" value="{{ request('max_price') }}" placeholder="Max" class="w-full pl-9 pr-3 py-1.5 border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 text-xs rounded-lg placeholder-slate-300">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 pt-2">
+                            <button type="submit" class="flex-1 py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">
+                                Terapkan
+                            </button>
+                            @if(request('min_price') || request('max_price'))
+                                <a href="{{ route('products.index', request()->only(['q', 'category'])) }}" class="py-1.5 px-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 text-xs font-semibold rounded-lg text-center transition">
+                                    Reset
+                                </a>
+                            @endif
+                        </div>
+                    </form>
                 </div>
             </div>
 

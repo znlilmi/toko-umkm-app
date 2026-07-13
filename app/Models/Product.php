@@ -83,4 +83,31 @@ class Product extends Model
     {
         return $this->hasMany(Review::class);
     }
+
+    /**
+     * Scope a query to filter products by search query, category, and price range.
+     */
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['q'] ?? $filters['search'] ?? null, function ($query, $search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        });
+
+        $query->when($filters['category'] ?? null, function ($query, $category) {
+            $query->whereHas('categories', function ($query) use ($category) {
+                $query->where('slug', $category)
+                      ->orWhere('categories.id', $category);
+            });
+        });
+
+        $query->when($filters['min_price'] ?? null, function ($query, $minPrice) {
+            $query->where('price', '>=', $minPrice);
+        });
+
+        $query->when($filters['max_price'] ?? null, function ($query, $maxPrice) {
+            $query->where('price', '<=', $maxPrice);
+        });
+
+        return $query;
+    }
 }
