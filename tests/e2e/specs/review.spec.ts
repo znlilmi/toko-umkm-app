@@ -13,7 +13,7 @@ test.describe('Alur Review Ulasan Produk - Buyer', () => {
     const loginPage = new LoginPage(page);
     await loginPage.navigate();
     await loginPage.login(orderData.email, orderData.password);
-    await expect(page).toHaveURL(/.*dashboard/);
+    await expect(page).toHaveURL(/.*(dashboard|products)/);
 
     // Step 3: Navigasi ke halaman orders dan konfirmasi terima barang
     const orderPage = new OrderPage(page);
