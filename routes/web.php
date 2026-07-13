@@ -40,6 +40,17 @@ Route::get('/products/{slug}', [ProductController::class, 'show'])->name('produc
 
 Route::middleware(['auth'])->group(function () {
 
+    // Dashboard Redirect based on Role
+    Route::get('/dashboard', function () {
+        $user = auth()->user();
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'merchant') {
+            return redirect()->route('merchant.dashboard');
+        }
+        return redirect()->route('products.index');
+    })->name('dashboard');
+
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
