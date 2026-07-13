@@ -25,7 +25,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $categories = App\Models\Category::whereNull('parent_id')->with('children')->get();
+    $featuredProducts = App\Models\Product::with(['shop', 'categories'])
+        ->where('is_active', true)
+        ->whereHas('shop', fn ($q) => $q->where('is_active', true))
+        ->latest()
+        ->limit(6)
+        ->get();
+    return view('welcome', compact('categories', 'featuredProducts'));
 })->name('home');
 
 // Public product catalog
