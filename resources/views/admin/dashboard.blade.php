@@ -14,9 +14,17 @@
                 <p class="text-indigo-200 text-sm max-w-xl leading-relaxed">Pantau performa omzet keuangan, aktivitas verifikasi toko UMKM, dan metrik pendaftaran pengguna secara global.</p>
             </div>
             
-            <div class="relative z-10 flex items-center bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 shadow-sm gap-3 flex-shrink-0">
-                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></div>
-                <span class="text-sm font-semibold text-indigo-100">Platform Online & Stabil</span>
+            <div class="relative z-10 flex flex-col sm:flex-row items-center gap-3 flex-shrink-0">
+                <div class="flex items-center bg-white/5 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/10 shadow-sm gap-3">
+                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></div>
+                    <span class="text-xs font-semibold text-indigo-100">Platform Online</span>
+                </div>
+                <a href="{{ route('admin.reports.commission-pdf') }}" class="inline-flex items-center justify-center px-5 py-3 text-xs font-bold text-slate-900 bg-white hover:bg-slate-100 rounded-2xl shadow-sm transition gap-1.5">
+                    <svg class="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                    <span>Cetak Laporan Komisi (PDF)</span>
+                </a>
             </div>
         </div>
 

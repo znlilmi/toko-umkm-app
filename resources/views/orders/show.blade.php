@@ -13,9 +13,17 @@
         <!-- Main Invoice details -->
         <div class="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 pb-6 mb-6 gap-4">
-                <div>
+                <div class="flex-1">
                     <span class="text-xs text-slate-400 block">No. Invoice</span>
-                    <h1 class="text-2xl font-bold text-slate-800">{{ $order->invoice_number }}</h1>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <h1 class="text-2xl font-bold text-slate-800">{{ $order->invoice_number }}</h1>
+                        <a href="{{ route('orders.invoice', $order->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            <span>Unduh Invoice (PDF)</span>
+                        </a>
+                    </div>
                     <span class="text-xs text-slate-400">Dibuat pada: {{ $order->created_at->format('d M Y H:i') }}</span>
                 </div>
                 <div class="text-right">

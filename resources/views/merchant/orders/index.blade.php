@@ -1,9 +1,27 @@
 <x-app-layout>
     <div class="space-y-6">
-        <!-- Header -->
-        <div>
-            <h1 class="text-2xl font-bold text-slate-800">Pesanan Masuk</h1>
-            <p class="text-sm text-slate-400">Proses pemesanan barang masuk dari pelanggan toko Anda.</p>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">Pesanan Masuk</h1>
+                <p class="text-sm text-slate-400">Proses pemesanan barang masuk dari pelanggan toko Anda.</p>
+            </div>
+            
+            <form action="{{ route('merchant.reports.sales-pdf') }}" method="GET" class="flex flex-wrap items-center gap-3 bg-white border border-slate-200 p-3 rounded-2xl shadow-sm text-xs">
+                <div class="flex items-center gap-2">
+                    <label for="start" class="text-slate-500 font-medium">Dari:</label>
+                    <input type="date" id="start" name="start" value="{{ request('start', now()->subDays(30)->format('Y-m-d')) }}" class="border-slate-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-xs py-1 px-2.5">
+                </div>
+                <div class="flex items-center gap-2">
+                    <label for="end" class="text-slate-500 font-medium">Sampai:</label>
+                    <input type="date" id="end" name="end" value="{{ request('end', now()->format('Y-m-d')) }}" class="border-slate-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-xs py-1 px-2.5">
+                </div>
+                <button type="submit" class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm shadow-indigo-100 transition gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                    <span>Cetak PDF</span>
+                </button>
+            </form>
         </div>
 
         <!-- Filter Tab Links -->

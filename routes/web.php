@@ -3,13 +3,16 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AdminCategoryController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\AdminReviewController;
 use App\Http\Controllers\AdminShopController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MerchantDashboardController;
 use App\Http\Controllers\MerchantOrderController;
 use App\Http\Controllers\MerchantProductController;
+use App\Http\Controllers\MerchantReportController;
 use App\Http\Controllers\MerchantReviewController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
@@ -64,6 +67,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Invoice PDF
+    Route::get('/orders/{order}/invoice', [InvoiceController::class, 'download'])->name('orders.invoice');
 
     // Addresses (all roles)
     Route::resource('addresses', AddressController::class)
@@ -138,6 +144,10 @@ Route::middleware(['auth'])->group(function () {
 
         // Reviews management
         Route::get('/reviews', [MerchantReviewController::class, 'index'])->name('reviews.index');
+
+        // Reports PDF
+        Route::get('/reports/sales-pdf', [MerchantReportController::class, 'salesPdf'])->name('reports.sales-pdf');
+        Route::get('/reports/low-stock-pdf', [MerchantReportController::class, 'lowStockPdf'])->name('reports.low-stock-pdf');
     });
 
     /*
@@ -162,6 +172,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Review moderation (CRUD)
         Route::resource('reviews', AdminReviewController::class)->only(['index', 'destroy']);
+
+        // Commission PDF
+        Route::get('/reports/commission-pdf', [AdminReportController::class, 'commissionPdf'])->name('reports.commission-pdf');
     });
 });
 
