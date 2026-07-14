@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ReviewExport;
+use App\Exports\SalesReportExport;
+use App\Exports\StockMutationExport;
 use App\Models\Order;
 use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MerchantReportController extends Controller
 {
@@ -84,5 +88,45 @@ class MerchantReportController extends Controller
         ]);
 
         return $pdf->download('laporan-stok-kritis-' . $shop->slug . '.pdf');
+    }
+
+    /**
+     * Download sales report as Excel for merchant's shop within a date range.
+     */
+    public function salesExcel(Request $request)
+    {
+        $shop = $this->getShop();
+
+        $startDateStr = $request->get('start') ?? $request->get('start_date');
+        $endDateStr   = $request->get('end') ?? $request->get('end_date');
+
+        $startDate = $startDateStr ? Carbon::parse($startDateStr)->startOfDay() : Carbon::now()->subDays(30)->startOfDay();
+        $endDate   = $endDateStr ? Carbon::parse($endDateStr)->endOfDay() : Carbon::now()->endOfDay();
+
+        $filename = 'rekap-penjualan-' . $shop->slug . '.xlsx';
+
+        return Excel::download(new SalesReportExport($shop, $startDate, $endDate), $filename);
+    }
+
+    /**
+     * Download stock mutation audit trail as Excel.
+     */
+    public function stockMutationExcel()
+    {
+        $shop     = $this->getShop();
+        $filename = 'mutasi-stok-' . $shop->slug . '.xlsx';
+
+        return Excel::download(new StockMutationExport($shop), $filename);
+    }
+
+    /**
+     * Download customer reviews report as Excel.
+     */
+    public function reviewExcel()
+    {
+        $shop     = $this->getShop();
+        $filename = 'laporan-ulasan-' . $shop->slug . '.xlsx';
+
+        return Excel::download(new ReviewExport($shop), $filename);
     }
 }

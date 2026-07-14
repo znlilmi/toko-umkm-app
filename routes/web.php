@@ -121,6 +121,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Dashboard
         Route::get('/dashboard', [MerchantDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/kpi-data', [MerchantDashboardController::class, 'kpiData'])->name('dashboard.kpi-data');
 
         // Shop settings
         Route::get('/shop', [ShopController::class, 'edit'])->name('shop.edit');
@@ -148,6 +149,11 @@ Route::middleware(['auth'])->group(function () {
         // Reports PDF
         Route::get('/reports/sales-pdf', [MerchantReportController::class, 'salesPdf'])->name('reports.sales-pdf');
         Route::get('/reports/low-stock-pdf', [MerchantReportController::class, 'lowStockPdf'])->name('reports.low-stock-pdf');
+
+        // Reports Excel
+        Route::get('/reports/sales-excel', [MerchantReportController::class, 'salesExcel'])->name('reports.sales-excel');
+        Route::get('/reports/stock-mutation-excel', [MerchantReportController::class, 'stockMutationExcel'])->name('reports.stock-mutation-excel');
+        Route::get('/reports/review-excel', [MerchantReportController::class, 'reviewExcel'])->name('reports.review-excel');
     });
 
     /*
@@ -159,6 +165,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Dashboard
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/kpi-data', [AdminDashboardController::class, 'kpiData'])->name('dashboard.kpi-data');
+        Route::get('/dashboard/refresh', [AdminDashboardController::class, 'refresh'])->name('dashboard.refresh');
 
         // Category management (CRUD)
         Route::resource('categories', AdminCategoryController::class);
@@ -175,6 +183,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Commission PDF
         Route::get('/reports/commission-pdf', [AdminReportController::class, 'commissionPdf'])->name('reports.commission-pdf');
+
+        // Merchant Performance Halaman
+        Route::get('/reports/merchant-performance', [AdminReportController::class, 'merchantPerformance'])->name('reports.merchant-performance');
     });
 });
 

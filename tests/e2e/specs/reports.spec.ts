@@ -58,7 +58,7 @@ test.describe('Printed Reports and Invoice PDF Verification', () => {
     await sellerPage.goto('/merchant/orders');
 
     // Wait for the sales report cetak button to be visible
-    const printButton = sellerPage.locator('button:has-text("Cetak PDF")');
+    const printButton = sellerPage.locator('a:has-text("Cetak PDF")');
     await expect(printButton).toBeVisible();
 
     // Set up download event listener and click it

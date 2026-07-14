@@ -16,3 +16,19 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Laravel Logs
+/storage/logs/*
+!/storage/logs/.gitignore
+
+# PHPUnit & Testing caches
+/.phpunit.result.cache
+
+# Playwright Testing results & reports
+/playwright-report
+/test-results
+/docs/testing/pdf-output/*
+!/docs/testing/pdf-output/.gitignore
+/docs/testing/spreadsheet-output/*
+!/docs/testing/spreadsheet-output/.gitignore
+

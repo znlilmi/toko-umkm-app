@@ -272,3 +272,17 @@ Gunakan perintah-perintah berikut untuk menjalankan test:
   ```bash
   npx playwright test --debug
   ```
+
+> [!IMPORTANT]
+> **Menjalankan Test pada Proyek ESM (`"type": "module"`)**:
+> Jika proyek Anda dikonfigurasi menggunakan tipe ES Modules (terdapat `"type": "module"` di dalam `package.json`), menjalankan `npx playwright test` langsung mungkin akan memicu kesalahan `ERR_UNKNOWN_FILE_EXTENSION` karena Node tidak mengenali ekstensi `.ts` secara langsung.
+> 
+> Untuk mengatasinya, jalankan pengujian dengan menyertakan loader `tsx` melalui variabel lingkungan `NODE_OPTIONS`:
+> - **Windows (PowerShell)**:
+>   ```powershell
+>   $env:NODE_OPTIONS="--experimental-loader tsx"; npx playwright test
+>   ```
+> - **Linux / macOS (Bash)**:
+>   ```bash
+>   NODE_OPTIONS="--experimental-loader tsx" npx playwright test
+>   ```

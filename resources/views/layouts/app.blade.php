@@ -233,6 +233,12 @@
                             </svg>
                             Kelola Ulasan
                         </a>
+                        <a href="{{ route('admin.reports.merchant-performance') }}" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition duration-150 {{ request()->routeIs('admin.reports.merchant-performance') ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
+                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.625c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 18.75v-5.625zM16.5 13.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 12 21 12.504 21 13.125v5.625c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-5.625zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v10.125c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625z" />
+                            </svg>
+                            Performa Penjual
+                        </a>
                     @elseif ($isMerchantPanel)
                         <!-- Merchant Menus -->
                         <a href="{{ route('merchant.dashboard') }}" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition duration-150 {{ request()->routeIs('merchant.dashboard') ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
@@ -395,6 +401,6 @@
             </div>
         </div>
     </footer>
-
+    @stack('scripts')
 </body>
 </html>

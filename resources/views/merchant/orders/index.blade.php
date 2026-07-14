@@ -6,23 +6,34 @@
                 <p class="text-sm text-slate-400">Proses pemesanan barang masuk dari pelanggan toko Anda.</p>
             </div>
             
-            <form action="{{ route('merchant.reports.sales-pdf') }}" method="GET" class="flex flex-wrap items-center gap-3 bg-white border border-slate-200 p-3 rounded-2xl shadow-sm text-xs">
+            <div class="flex flex-wrap items-center gap-3 bg-white border border-slate-200 p-3 rounded-2xl shadow-sm text-xs" x-data="{ start: '{{ request('start', now()->subDays(30)->format('Y-m-d')) }}', end: '{{ request('end', now()->format('Y-m-d')) }}' }">
                 <div class="flex items-center gap-2">
-                    <label for="start" class="text-slate-500 font-medium">Dari:</label>
-                    <input type="date" id="start" name="start" value="{{ request('start', now()->subDays(30)->format('Y-m-d')) }}" class="border-slate-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-xs py-1 px-2.5">
+                    <label class="text-slate-500 font-medium">Dari:</label>
+                    <input type="date" x-model="start" class="border-slate-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-xs py-1 px-2.5">
                 </div>
                 <div class="flex items-center gap-2">
-                    <label for="end" class="text-slate-500 font-medium">Sampai:</label>
-                    <input type="date" id="end" name="end" value="{{ request('end', now()->format('Y-m-d')) }}" class="border-slate-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-xs py-1 px-2.5">
+                    <label class="text-slate-500 font-medium">Sampai:</label>
+                    <input type="date" x-model="end" class="border-slate-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-xs py-1 px-2.5">
                 </div>
-                <button type="submit" class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm shadow-indigo-100 transition gap-1">
+                {{-- Tombol Cetak PDF --}}
+                <a :href="'{{ route('merchant.reports.sales-pdf') }}?start=' + start + '&end=' + end"
+                   class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm shadow-indigo-100 transition gap-1">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                     </svg>
                     <span>Cetak PDF</span>
-                </button>
-            </form>
+                </a>
+                {{-- Tombol Ekspor Excel --}}
+                <a :href="'{{ route('merchant.reports.sales-excel') }}?start=' + start + '&end=' + end"
+                   class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                    </svg>
+                    <span>Ekspor Excel</span>
+                </a>
+            </div>
         </div>
+
 
         <!-- Filter Tab Links -->
         <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-px">
