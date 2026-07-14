@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛒 TokoKita — Platform E-Commerce Multi-Merchant UMKM
+# 🛒 Toko UMKM — Platform E-Commerce Multi-Merchant UMKM
 
 **Digitalisasi UMKM Indonesia Melalui Platform Toko Online Terintegrasi**
 
@@ -19,7 +19,7 @@
 
 **TokoKita** adalah platform e-commerce multi-merchant yang dirancang khusus untuk mendigitalisasi pelaku **Usaha Mikro, Kecil, dan Menengah (UMKM)** di Indonesia. Platform ini memungkinkan pemilik UMKM (merchant) membuka toko online secara instan, mengelola katalog produk dan inventaris (stok), serta memantau analitik keuangan bisnis secara real-time.
 
-Dibangun sebagai proyek Tugas Akhir/Skripsi, aplikasi ini mengimplementasikan arsitektur **MVC (Model-View-Controller)** menggunakan **Laravel 10** dengan fitur-fitur tingkat lanjut seperti *split-order checkout*, *stock ledger/audit trail*, *database locking* untuk pencegahan *race condition*, dan **10 jenis laporan** dalam format Dashboard, Grafik, PDF, dan Excel.
+Dibangun sebagai proyek praktik, aplikasi ini mengimplementasikan arsitektur **MVC (Model-View-Controller)** menggunakan **Laravel 10** dengan fitur-fitur tingkat lanjut seperti *split-order checkout*, *stock ledger/audit trail*, *database locking* untuk pencegahan *race condition*, dan **10 jenis laporan** dalam format Dashboard, Grafik, PDF, dan Excel.
 
 ---
 
@@ -400,22 +400,10 @@ Proyek ini dilengkapi dengan dokumentasi analisis sistem yang komprehensif di da
 
 ---
 
-## 👤 Informasi Penulis
-
-| Detail Mahasiswa | Informasi |
-|:---|:---|
-| **Nama** | Muhammad Zainal Ilmi |
-| **NIM** | 22051204068 |
-| **Program Studi** | S1 Teknik Informatika |
-| **Email Akademik** | muhammad.22051@mhs.unesa.ac.id |
-| **Institusi** | Universitas Negeri Surabaya (UNESA) |
-
----
-
 ## 📄 Lisensi
 
 Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 
 ```
-MIT License — Copyright (c) 2026 TokoKita Authors
+MIT License — Copyright (c) 2026 Toko UMKM Authors
 ```
