@@ -3,12 +3,14 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AdminCategoryController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminReviewController;
 use App\Http\Controllers\AdminShopController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MerchantDashboardController;
 use App\Http\Controllers\MerchantOrderController;
 use App\Http\Controllers\MerchantProductController;
+use App\Http\Controllers\MerchantReviewController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
@@ -133,6 +135,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
         Route::get('/inventory/{product}', [InventoryController::class, 'show'])->name('inventory.show');
         Route::post('/inventory/{product}/adjust', [InventoryController::class, 'adjust'])->name('inventory.adjust');
+
+        // Reviews management
+        Route::get('/reviews', [MerchantReviewController::class, 'index'])->name('reviews.index');
     });
 
     /*
@@ -154,6 +159,9 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/shops/{shop}/verify', [AdminShopController::class, 'verify'])->name('shops.verify');
         Route::patch('/shops/{shop}/reject', [AdminShopController::class, 'reject'])->name('shops.reject');
         Route::patch('/shops/{shop}/suspend', [AdminShopController::class, 'suspend'])->name('shops.suspend');
+
+        // Review moderation (CRUD)
+        Route::resource('reviews', AdminReviewController::class)->only(['index', 'destroy']);
     });
 });
 

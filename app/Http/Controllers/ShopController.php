@@ -21,21 +21,14 @@ class ShopController extends Controller
     /**
      * Register a new shop and change user role to merchant.
      */
-    public function store(StoreShopRequest $request): RedirectResponse
+    public function store(StoreShopRequest $request, \App\Services\ShopService $shopService): RedirectResponse
     {
-        $data = $request->validated();
-
-        if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('shops/logos', 'public');
-        }
-        if ($request->hasFile('banner')) {
-            $data['banner'] = $request->file('banner')->store('shops/banners', 'public');
-        }
-
-        $shop = auth()->user()->shop()->create($data);
-
-        // Update user role to merchant once shop is submitted.
-        auth()->user()->update(['role' => 'merchant']);
+        $shopService->registerShop(
+            auth()->user(),
+            $request->validated(),
+            $request->file('logo'),
+            $request->file('banner')
+        );
 
         return redirect()->route('merchant.dashboard')
             ->with('success', 'Toko berhasil didaftarkan. Menunggu verifikasi admin.');
@@ -55,23 +48,17 @@ class ShopController extends Controller
     /**
      * Update the merchant's shop profile.
      */
-    public function update(UpdateShopRequest $request): RedirectResponse
+    public function update(UpdateShopRequest $request, \App\Services\ShopService $shopService): RedirectResponse
     {
         $shop = auth()->user()->shop;
         abort_if(! $shop, 404);
 
-        $data = $request->validated();
-
-        if ($request->hasFile('logo')) {
-            Storage::disk('public')->delete($shop->logo);
-            $data['logo'] = $request->file('logo')->store('shops/logos', 'public');
-        }
-        if ($request->hasFile('banner')) {
-            Storage::disk('public')->delete($shop->banner);
-            $data['banner'] = $request->file('banner')->store('shops/banners', 'public');
-        }
-
-        $shop->update($data);
+        $shopService->updateShop(
+            $shop,
+            $request->validated(),
+            $request->file('logo'),
+            $request->file('banner')
+        );
 
         return redirect()->route('merchant.shop.edit')
             ->with('success', 'Pengaturan toko berhasil diperbarui.');

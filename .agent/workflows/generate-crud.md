@@ -110,19 +110,124 @@ public function rules(): array
 
 ---
 
-## Tahap 4: Pembuatan Resource Controller
+## Tahap 4: Pembuatan Service Class (Service Layer)
+
+Untuk menjaga Controller tetap ramping (thin controller) dan memusatkan logika bisnis, buatlah Service Class di direktori `app/Services/{Entity}Service.php`.
+
+### Aturan Service Class:
+1. Hubungkan logika bisnis utama (misal: transaksi database kompleks, interaksi dengan API, kalkulasi, mutasi stok, dll) di dalam Service Class.
+2. Gunakan database transaction (`DB::transaction`) jika terdapat beberapa query tulis (create/update/delete) yang saling terkait demi menjaga konsistensi data.
+3. Gunakan custom Exception jika terdapat kesalahan logika bisnis (contoh: stok habis, status tidak valid).
+
+### Contoh Template Service:
+```php
+<?php
+
+namespace App\Services;
+
+use App\Models\Brand;
+use Illuminate\Support\Facades\DB;
+
+class BrandService
+{
+    public function createBrand(array $data): Brand
+    {
+        return DB::transaction(function () use ($data) {
+            // Tambahkan logika bisnis di sini jika diperlukan
+            return Brand::create($data);
+        });
+    }
+
+    public function updateBrand(Brand $brand, array $data): Brand
+    {
+        return DB::transaction(function () use ($brand, $data) {
+            $brand->update($data);
+            return $brand;
+        });
+    }
+
+    public function deleteBrand(Brand $brand): void
+    {
+        DB::transaction(function () use ($brand) {
+            // Reassign or delete related children/models
+            $brand->products()->delete();
+            $brand->delete();
+        });
+    }
+}
+```
+
+---
+
+## Tahap 5: Pembuatan Resource Controller
 
 Buat berkas controller di `app/Http/Controllers/{Entity}Controller.php`.
 
 ### Aturan Controller:
 1. Gunakan method standard Resource: `index`, `create`, `store`, `show`, `edit`, `update`, `destroy`.
-2. Gunakan dependency injection untuk custom Form Request.
-3. Selalu tambahkan otorisasi (misal: `$this->authorize('view', $item)` atau via middleware di route) untuk menjaga keamanan.
-4. Mengembalikan view atau redirect dengan pesan sukses: `->with('success', 'Data berhasil disimpan.')`.
+2. Gunakan dependency injection untuk menginjeksikan Service Class terkait di constructor atau langsung pada method parameter.
+3. Hindari menulis logika manipulasi database langsung di Controller; delegasikan ke Service Class.
+4. Gunakan dependency injection untuk custom Form Request.
+5. Selalu tambahkan otorisasi (misal: `$this->authorize('view', $item)` atau via middleware di rute) untuk menjaga keamanan.
+6. Mengembalikan view atau redirect dengan pesan sukses: `->with('success', 'Data berhasil disimpan.')`.
+
+### Contoh Template Controller dengan Service:
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreBrandRequest;
+use App\Http\Requests\UpdateBrandRequest;
+use App\Models\Brand;
+use App\Services\BrandService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+
+class BrandController extends Controller
+{
+    protected $brandService;
+
+    public function __construct(BrandService $brandService)
+    {
+        $this->brandService = $brandService;
+    }
+
+    public function index(): View
+    {
+        $brands = Brand::latest()->paginate(15);
+        return view('admin.brands.index', compact('brands'));
+    }
+
+    public function store(StoreBrandRequest $request): RedirectResponse
+    {
+        $this->brandService->createBrand($request->validated());
+
+        return redirect()->route('admin.brands.index')
+            ->with('success', 'Kategori merek berhasil ditambahkan.');
+    }
+
+    public function update(UpdateBrandRequest $request, Brand $brand): RedirectResponse
+    {
+        $this->brandService->updateBrand($brand, $request->validated());
+
+        return redirect()->route('admin.brands.index')
+            ->with('success', 'Kategori merek berhasil diperbarui.');
+    }
+
+    public function destroy(Brand $brand): RedirectResponse
+    {
+        $this->brandService->deleteBrand($brand);
+
+        return redirect()->route('admin.brands.index')
+            ->with('success', 'Kategori merek berhasil dihapus.');
+    }
+}
+```
 
 ---
 
-## Tahap 5: Registrasi Route
+## Tahap 6: Registrasi Route
 
 Daftarkan rute di `routes/web.php`.
 
@@ -139,7 +244,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 ---
 
-## Tahap 6: Pembuatan View CRUD (Blade + Tailwind)
+## Tahap 7: Pembuatan View CRUD (Blade + Tailwind)
 
 Buat empat berkas Blade di direktori `resources/views/{entities}/`:
 1. `index.blade.php`: Halaman daftar data dalam bentuk tabel atau grid yang responsif, lengkap dengan tombol edit, delete, dan pagination.

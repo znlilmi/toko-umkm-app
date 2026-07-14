@@ -26,10 +26,8 @@
                     @endphp
                     <div class="group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition duration-200 flex flex-col">
                         <!-- Image -->
-                        <div class="aspect-square bg-slate-50 relative overflow-hidden flex items-center justify-center text-slate-300">
-                            <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.885 1.77a2.25 2.25 0 002.007 1.24h1.98a2.25 2.25 0 002.007-1.24l.885-1.77a2.25 2.25 0 012.007-1.24h3.86m-18 0h18" />
-                            </svg>
+                        <div class="aspect-square relative overflow-hidden flex items-center justify-center bg-slate-50">
+                            <img src="{{ asset('images/default_product.png') }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
                             <!-- Delete button -->
                             <form action="{{ route('wishlist.destroy', $item->id) }}" method="POST" class="absolute top-3 right-3">
                                 @csrf

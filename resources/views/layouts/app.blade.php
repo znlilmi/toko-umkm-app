@@ -28,30 +28,43 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <!-- Left Side: Logo & Main Navigation -->
-                <div class="flex">
+                <div class="flex flex-1 items-center">
                     <!-- Brand Logo -->
-                    <div class="shrink-0 flex items-center">
-                        <a href="{{ route('home') }}" class="flex items-center space-x-2">
-                            <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-violet-500 bg-clip-text text-transparent">TokoKita</span>
-                            <span class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-100">UMKM</span>
+                    <div class="shrink-0 flex items-center mr-6">
+                        <a href="{{ route('home') }}" class="flex items-center space-x-1">
+                            <span class="text-2xl font-black text-indigo-600 tracking-tighter">toko</span>
+                            <span class="text-[9px] font-bold bg-orange-500 text-white px-2 py-0.5 rounded-lg uppercase tracking-wider">UMKM</span>
                         </a>
                     </div>
 
+                    <!-- Centered Search Bar -->
+                    <div class="hidden md:flex flex-1 items-center max-w-md lg:max-w-lg mx-6">
+                        <form action="{{ route('products.index') }}" method="GET" class="w-full flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-1.5 focus-within:border-indigo-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-100 transition duration-150">
+                            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari produk lokal terbaik di Toko UMKM..." class="flex-1 bg-transparent border-0 focus:ring-0 p-0 text-xs text-slate-700 placeholder-slate-400">
+                            <button type="submit" class="text-indigo-600 hover:text-indigo-700 focus:outline-none pl-2 border-l border-slate-200">
+                                <svg class="w-4 h-4 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                <span class="sr-only">Cari</span>
+                            </button>
+                        </form>
+                    </div>
+
                     <!-- Navigation Links (Public / Customer) -->
-                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                        <a href="{{ route('products.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition duration-150 ease-in-out {{ request()->routeIs('products.*') ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
+                    <div class="hidden space-x-6 sm:-my-px sm:flex h-16">
+                        <a href="{{ route('products.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition duration-150 ease-in-out {{ request()->routeIs('products.*') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
                             Katalog Produk
                         </a>
                         
                         @auth
                             @if(auth()->user()->role === 'customer' || auth()->user()->role === 'merchant')
-                                <a href="{{ route('cart.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition duration-150 ease-in-out {{ request()->routeIs('cart.*') ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
+                                <a href="{{ route('cart.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition duration-150 ease-in-out {{ request()->routeIs('cart.*') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
                                     Keranjang
                                 </a>
-                                <a href="{{ route('wishlist.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition duration-150 ease-in-out {{ request()->routeIs('wishlist.*') ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
+                                <a href="{{ route('wishlist.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition duration-150 ease-in-out {{ request()->routeIs('wishlist.*') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
                                     Wishlist
                                 </a>
-                                <a href="{{ route('orders.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition duration-150 ease-in-out {{ request()->routeIs('orders.*') ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
+                                <a href="{{ route('orders.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition duration-150 ease-in-out {{ request()->routeIs('orders.*') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300' }}">
                                     Pesanan Saya
                                 </a>
                             @endif
@@ -214,6 +227,12 @@
                             </svg>
                             Moderasi Toko
                         </a>
+                        <a href="{{ route('admin.reviews.index') }}" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition duration-150 {{ request()->routeIs('admin.reviews.*') ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
+                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.12 2.83 2.78 2.83h1.37l3.52 3.52c.22.22.58.22.8 0V17.1c3.15-.15 5.75-2.6 5.75-5.85a5.99 5.99 0 00-6-6 6 6 0 00-6 6v.26z" />
+                            </svg>
+                            Kelola Ulasan
+                        </a>
                     @elseif ($isMerchantPanel)
                         <!-- Merchant Menus -->
                         <a href="{{ route('merchant.dashboard') }}" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition duration-150 {{ request()->routeIs('merchant.dashboard') ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
@@ -247,6 +266,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                             Pengaturan Toko
+                        </a>
+                        <a href="{{ route('merchant.reviews.index') }}" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition duration-150 {{ request()->routeIs('merchant.reviews.*') ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
+                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.12 2.83 2.78 2.83h1.37l3.52 3.52c.22.22.58.22.8 0V17.1c3.15-.15 5.75-2.6 5.75-5.85a5.99 5.99 0 00-6-6 6 6 0 00-6 6v.26z" />
+                            </svg>
+                            Ulasan Produk
                         </a>
                     @endif
                 </nav>

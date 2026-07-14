@@ -29,12 +29,10 @@
         <div class="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm p-6 md:p-8 mb-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                 <!-- Left: Product Image Placeholder -->
-                <div class="aspect-square bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center text-slate-300 relative">
-                    <svg class="w-24 h-24" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.885 1.77a2.25 2.25 0 002.007 1.24h1.98a2.25 2.25 0 002.007-1.24l.885-1.77a2.25 2.25 0 012.007-1.24h3.86m-18 0h18" />
-                    </svg>
+                <div class="aspect-square rounded-2xl border border-slate-100 flex items-center justify-center overflow-hidden bg-slate-50 relative">
+                    <img src="{{ asset('images/default_product.png') }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
                     @if($product->stock <= 0)
-                        <div class="absolute top-4 left-4 bg-rose-500 text-white text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full">
+                        <div class="absolute top-4 left-4 bg-rose-500 text-white text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full z-10">
                             Stok Habis
                         </div>
                     @endif

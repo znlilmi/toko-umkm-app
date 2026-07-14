@@ -56,10 +56,8 @@
                             <div class="space-y-4 mb-4">
                                 @foreach($order->items as $item)
                                     <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 bg-slate-50 border rounded-lg flex items-center justify-center text-slate-300 flex-shrink-0">
-                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.885 1.77a2.25 2.25 0 002.007 1.24h1.98a2.25 2.25 0 002.007-1.24l.885-1.77a2.25 2.25 0 012.007-1.24h3.86m-18 0h18" />
-                                            </svg>
+                                        <div class="w-10 h-10 bg-slate-50 border rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
+                                            <img src="{{ asset('images/default_product.png') }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <span class="text-slate-800 text-sm font-semibold block truncate leading-tight">{{ $item->product->name }}</span>

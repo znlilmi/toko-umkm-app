@@ -15,19 +15,33 @@ export default {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                // Overwrite indigo dengan warna khas Shopee Orange
+                // Overwrite indigo dengan warna khas Blibli Blue
                 indigo: {
-                    50: '#ffeee8',
-                    100: '#ffd0c4',
-                    200: '#ffb09e',
-                    300: '#ff8a72',
-                    400: '#ff6245',
-                    500: '#f05335',
-                    600: '#ee4d2d', // Shopee Orange
-                    700: '#d44327',
-                    800: '#b0341c',
-                    900: '#8c2815',
-                    950: '#6b1c0d',
+                    50: '#e6f4fb',
+                    100: '#cceafd',
+                    200: '#99d4fb',
+                    300: '#66bef9',
+                    400: '#33a7f7',
+                    500: '#0095DA', // Blibli Blue Primary
+                    600: '#0082be',
+                    700: '#006fa3',
+                    800: '#005c87',
+                    900: '#004b6d',
+                    950: '#003852',
+                },
+                // Overwrite orange dengan warna khas Blibli Yellow
+                orange: {
+                    50: '#fff9e6',
+                    100: '#fff0b3',
+                    200: '#ffe780',
+                    300: '#ffdd4d',
+                    400: '#ffd31a',
+                    500: '#FFC72C', // Blibli Yellow
+                    600: '#e6b01b',
+                    700: '#cc9a14',
+                    800: '#99730f',
+                    900: '#664c0a',
+                    950: '#332605',
                 }
             }
         },

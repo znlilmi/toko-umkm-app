@@ -34,10 +34,7 @@ class OrderController extends Controller
         return view('orders.create', compact('cartItems', 'addresses'));
     }
 
-    /**
-     * Place the order (checkout), grouped by shop.
-     */
-    public function store(StoreOrderRequest $request): RedirectResponse
+    public function store(StoreOrderRequest $request, \App\Services\OrderService $orderService): RedirectResponse
     {
         $user = auth()->user();
         $address = $user->addresses()->findOrFail($request->address_id);
@@ -52,58 +49,12 @@ class OrderController extends Controller
                 ->with('error', 'Keranjang belanja Anda kosong atau item tidak ditemukan.');
         }
 
-        // Group cart items by shop, as orders are split by shop
-        $groupedItems = $cartItems->groupBy('product.shop_id');
-
-        \Illuminate\Support\Facades\DB::transaction(function () use ($user, $address, $request, $groupedItems) {
-            foreach ($groupedItems as $shopId => $items) {
-                $totalAmount = 0;
-                $totalWeight = 0;
-
-                foreach ($items as $item) {
-                    $totalAmount += $item->product->price * $item->qty;
-                    $totalWeight += $item->product->weight * $item->qty;
-                }
-
-                // Shipping cost formula: Rp 15.000 per kg flat, minimum 15.000
-                $shippingCost = ceil($totalWeight / 1000) * 15000;
-                if ($shippingCost == 0) {
-                    $shippingCost = 15000;
-                }
-
-                $grandTotal = $totalAmount + $shippingCost;
-
-                // Create unique invoice number
-                $invoiceNumber = 'INV/' . date('Ymd') . '/' . strtoupper(bin2hex(random_bytes(4)));
-
-                $order = Order::create([
-                    'invoice_number'   => $invoiceNumber,
-                    'customer_id'      => $user->id,
-                    'shop_id'          => $shopId,
-                    'total_amount'     => $totalAmount,
-                    'shipping_cost'    => $shippingCost,
-                    'grand_total'      => $grandTotal,
-                    'status'           => 'pending_payment',
-                    'shipping_address' => "Penerima: {$address->recipient_name}\nTelepon: {$address->phone}\nAlamat: {$address->address_line}",
-                    'courier'          => $request->courier,
-                ]);
-
-                foreach ($items as $item) {
-                    $order->items()->create([
-                        'product_id' => $item->product_id,
-                        'qty'        => $item->qty,
-                        'price'      => $item->product->price,
-                        'subtotal'   => $item->product->price * $item->qty,
-                    ]);
-
-                    // Decrement product stock
-                    $item->product->decrement('stock', $item->qty);
-
-                    // Delete the item from cart
-                    $item->delete();
-                }
-            }
-        });
+        try {
+            $orderService->createOrder($user, $cartItems, $address, $request->courier);
+        } catch (\App\Exceptions\StockException $e) {
+            return redirect()->route('cart.index')
+                ->with('error', $e->getMessage());
+        }
 
         return redirect()->route('orders.index')
             ->with('success', 'Pesanan berhasil dibuat. Silakan lakukan pembayaran.');
@@ -124,13 +75,11 @@ class OrderController extends Controller
     /**
      * Customer confirms receipt of goods (marks order as completed).
      */
-    public function complete(Order $order): RedirectResponse
+    public function complete(Order $order, \App\Services\OrderService $orderService): RedirectResponse
     {
         $this->authorize('update', $order);
 
-        abort_if($order->status !== 'shipped', 403, 'Pesanan belum dikirim.');
-
-        $order->update(['status' => 'completed']);
+        $orderService->completeOrder($order);
 
         return redirect()->route('orders.show', $order)
             ->with('success', 'Pesanan dikonfirmasi selesai. Terima kasih!');

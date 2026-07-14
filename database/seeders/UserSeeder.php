@@ -22,6 +22,17 @@ class UserSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
+        DB::table('users')->insert([
+            'name' => 'Administrator',
+            'email' => 'admin@admin.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'phone' => '081234567891',
+            'role' => 'admin',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         // 2. Seed Merchants
         $merchants = [
             [

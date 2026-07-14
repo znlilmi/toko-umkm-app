@@ -45,7 +45,7 @@ class InventoryController extends Controller
     /**
      * Manually adjust stock (IN or OUT) for a product.
      */
-    public function adjust(Request $request, Product $product): RedirectResponse
+    public function adjust(Request $request, Product $product, \App\Services\InventoryService $inventoryService): RedirectResponse
     {
         $shop = $this->getShop();
         abort_if($product->shop_id !== $shop->id, 403);
@@ -56,19 +56,7 @@ class InventoryController extends Controller
             'description' => ['nullable', 'string', 'max:255'],
         ]);
 
-        if ($data['type'] === 'OUT') {
-            abort_if($product->stock < $data['qty'], 422, 'Stok tidak mencukupi untuk pengurangan.');
-            $product->decrement('stock', $data['qty']);
-        } else {
-            $product->increment('stock', $data['qty']);
-        }
-
-        StockMutation::create([
-            'product_id'  => $product->id,
-            'qty'         => $data['qty'],
-            'type'        => $data['type'],
-            'description' => $data['description'] ?? 'Penyesuaian Manual',
-        ]);
+        $inventoryService->adjustStock($product, $data['qty'], $data['type'], $data['description'] ?? null);
 
         return redirect()->route('merchant.inventory.show', $product)
             ->with('success', 'Stok berhasil disesuaikan.');

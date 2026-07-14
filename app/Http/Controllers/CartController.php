@@ -27,23 +27,10 @@ class CartController extends Controller
     /**
      * Add a product to the cart, or increment qty if it already exists.
      */
-    public function store(StoreCartRequest $request): RedirectResponse
+    public function store(StoreCartRequest $request, \App\Services\CartService $cartService): RedirectResponse
     {
-        $data    = $request->validated();
-        $product = Product::findOrFail($data['product_id']);
-
-        $cartItem = auth()->user()->carts()
-            ->where('product_id', $product->id)
-            ->first();
-
-        if ($cartItem) {
-            $cartItem->increment('qty', $data['qty']);
-        } else {
-            auth()->user()->carts()->create([
-                'product_id' => $product->id,
-                'qty'        => $data['qty'],
-            ]);
-        }
+        $data = $request->validated();
+        $cartService->addToCart(auth()->user(), $data['product_id'], $data['qty']);
 
         return redirect()->route('cart.index')
             ->with('success', 'Produk ditambahkan ke keranjang.');

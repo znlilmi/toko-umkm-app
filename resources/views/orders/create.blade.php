@@ -105,10 +105,8 @@
                                     <div class="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
                                         <div class="flex items-center space-x-3">
                                             <input type="hidden" name="cart_item_ids[]" value="{{ $item->id }}">
-                                            <div class="w-12 h-12 bg-slate-50 border rounded-lg flex items-center justify-center text-slate-300 flex-shrink-0">
-                                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.885 1.77a2.25 2.25 0 002.007 1.24h1.98a2.25 2.25 0 002.007-1.24l.885-1.77a2.25 2.25 0 012.007-1.24h3.86m-18 0h18" />
-                                                </svg>
+                                            <div class="w-12 h-12 bg-slate-50 border rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
+                                                <img src="{{ asset('images/default_product.png') }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
                                             </div>
                                             <div>
                                                 <span class="text-slate-800 text-sm font-semibold block leading-tight line-clamp-1">{{ $item->product->name }}</span>
