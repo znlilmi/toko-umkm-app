@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 🛒 TokoKita — Platform E-Commerce Multi-Merchant UMKM
 
@@ -25,25 +25,38 @@ Dibangun sebagai proyek Tugas Akhir/Skripsi, aplikasi ini mengimplementasikan ar
 
 ## 🖼️ Tangkapan Layar Fitur Utama
 
-### Halaman Utama (Landing Page)
-Halaman depan TokoKita menampilkan hero banner promosi UMKM, kategori populer, countdown flash sale, serta rekomendasi produk lokal secara dinamis dengan harga, rating, dan badge ketersediaan stok.
+<table>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <strong>Halaman Utama</strong><br><br>
+      <a href="docs/screenshots/landing-page.png">
+        <img src="docs/screenshots/landing-page.png" alt="Halaman utama TokoKita" width="100%">
+      </a>
+    </td>
+    <td width="50%" align="center" valign="top">
+      <strong>Dashboard Administrator</strong><br><br>
+      <a href="docs/screenshots/admin-dashboard.png">
+        <img src="docs/screenshots/admin-dashboard.png" alt="Dashboard administrator platform" width="100%">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <strong>Dashboard Merchant</strong><br><br>
+      <a href="docs/screenshots/merchant-dashboard.png">
+        <img src="docs/screenshots/merchant-dashboard.png" alt="Dashboard merchant" width="100%">
+      </a>
+    </td>
+    <td width="50%" align="center" valign="top">
+      <strong>Katalog Produk</strong><br><br>
+      <a href="docs/screenshots/katalog-produk.png">
+        <img src="docs/screenshots/katalog-produk.png" alt="Katalog produk publik" width="100%">
+      </a>
+    </td>
+  </tr>
+</table>
 
-![Landing Page](docs/screenshots/landing-page.png)
-
-### Dashboard Administrator Platform
-Dashboard khusus Admin yang menyajikan KPI Cards (Omzet GMV, Komisi Platform 5%, Total Pesanan, Total Pengguna), grafik tren GMV 30 hari, Top 10 Merchant berdasarkan performa, distribusi status pesanan (Pie Chart), daftar transaksi terbaru, dan daftar user baru mendaftar.
-
-![Admin Dashboard](docs/screenshots/admin-dashboard.png)
-
-### Dashboard Merchant (Penjual)
-Dashboard intuitif bagi pemilik toko UMKM menampilkan Total Pendapatan, Transaksi Sukses, Rata-rata Nilai Pesanan (AOV), Saldo Siap Tarik, grafik tren penjualan 30 hari (GMV & frekuensi), Donut Chart kategori produk terjual, daftar pesanan masuk terbaru, dan alert stok rendah (*low-stock warning*).
-
-![Merchant Dashboard](docs/screenshots/merchant-dashboard.png)
-
-### Katalog Produk Publik
-Halaman katalog produk yang dapat diakses publik dengan fitur pencarian, filter kategori hierarkis (sidebar), filter rentang harga, paginasi, serta tampilan kartu produk dengan gambar, harga, rating, dan nama toko.
-
-![Katalog Produk](docs/screenshots/katalog-produk.png)
+<p align="center"><em>Klik gambar untuk melihat ukuran penuh.</em></p>
 
 ---
 
@@ -406,4 +419,3 @@ Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 ```
 MIT License — Copyright (c) 2026 TokoKita Authors
 ```
-]]>
